@@ -112,10 +112,6 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
   })
 
   const onRowEditComplete = (e: any) => {
-    let _products: productWithVariation[] = JSON.parse(JSON.stringify(tableProducts))
-
-
-    console.log(e)// deep copy
 
     let { newData, index } = e
 
@@ -123,10 +119,7 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
 
     const retailCount = retailTableData?.offers.find(offer => offer.externalId == newData.databaseId)
 
-
-    let parentIndex = Object.values(_products).findIndex((product) => product.variations.nodes.find((variation) => variation.databaseId === e.data.databaseId))
-
-    _products[parentIndex].variations.nodes[index] = newData
+    let parentIndex = Object.values(tableProducts!).findIndex((product) => product.variations.nodes.find((variation) => variation.databaseId === e.data.databaseId))
 
     setTableProducts((prev) => {
       const newProdData = [...prev!]
@@ -147,7 +140,7 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
     })
 
     const args = {
-      productId: _products[parentIndex].productId,
+      productId: tableProducts![parentIndex].productId,
       variationId: newData.databaseId,
       count: newData.stockQuantity,
       retailId: retailCount?.id
@@ -155,7 +148,7 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
 
     retQuantity !== undefined ?
       trigger<OfferToUpdate>(args) :
-      createTrigger<{ product: productWithVariation, variation: OfferToUpdate }>({ product: _products[parentIndex], variation: newData })
+      createTrigger<{ product: productWithVariation, variation: OfferToUpdate }>({ product: tableProducts![parentIndex], variation: newData })
   };
 
 
