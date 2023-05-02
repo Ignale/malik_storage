@@ -95,8 +95,7 @@ function NewProductForm({ sku, images, categories, attributes }: NewProductFormP
       weight: '1000',
 
     },
-    onSubmit: async (values, { setSubmitting }) => {
-      console.log(values)
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true)
       try {
         const res = await fetch('/api/createProduct', {
@@ -111,16 +110,19 @@ function NewProductForm({ sku, images, categories, attributes }: NewProductFormP
           console.log(data)
           toast.current!.show({ severity: 'success', summary: 'Успешно', detail: 'Товар создан', life: 3000 });
           setSubmitting(false)
+          resetForm()
         } else {
           const data = await res.json()
           console.log(data)
           toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: 'Товар не создан', life: 3000 });
           setSubmitting(false)
+          resetForm()
         }
       } catch (e) {
         console.log(e)
         toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: 'Товар не создан', life: 3000 });
         setSubmitting(false)
+        resetForm()
       }
 
     }

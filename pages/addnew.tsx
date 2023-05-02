@@ -23,6 +23,7 @@ export default function Addnew({ categories, attributes, sku }: AddnewProps) {
 
   const setImageHandler = (data: UploadData[]) => {
     setUploadedImages(() => data)
+    setShowForm(() => true)
   }
 
   // const setChosenImgsHandler = (data: UploadData[]) => {
@@ -40,7 +41,8 @@ export default function Addnew({ categories, attributes, sku }: AddnewProps) {
           <p>Добавлено {uploadedImages.length} изображений</p> :
           <p>Изображения не добавлены</p>}
       </Fieldset>
-      <NewProductForm categories={categories} sku={sku} attributes={attributes} images={uploadedImages} />
+
+      {showFrom && <NewProductForm categories={categories} sku={sku} attributes={attributes} images={uploadedImages} />}
     </Layout>
   )
 }
