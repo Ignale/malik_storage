@@ -45,7 +45,7 @@ export default function Addnew({ categories, attributes, sku }: AddnewProps) {
   )
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const client = initializeApollo()
   const { data: all_cvet } = await client.query({
     query: ALL_CVET,
@@ -57,7 +57,6 @@ export async function getServerSideProps() {
     query: ALL_PRODUCTS_CATEGORIES,
   })
 
-  const sku = crypto.randomBytes(4).toString('hex').toUpperCase()
   return (
     {
       props: {
@@ -66,8 +65,8 @@ export async function getServerSideProps() {
           pa_cvet: all_cvet.allPaCvet.nodes,
           pa_size: all_size.allPaSize.nodes
         },
-        sku
-      }
+      },
+      revalidate: 60
     }
   )
 }

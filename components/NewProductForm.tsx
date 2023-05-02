@@ -10,7 +10,7 @@ import { Dropdown, DropdownProps, DropdownChangeEvent } from 'primereact/dropdow
 import { Button } from 'primereact/button';
 import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
 import { Toast } from 'primereact/toast';
-
+import * as crypto from 'crypto';
 
 type NewProductFormProps = {
   images: UploadData[]
@@ -72,7 +72,7 @@ function NewProductForm({ sku, images, categories, attributes }: NewProductFormP
 
       },
       ],
-      sku: sku,
+      sku: crypto.randomBytes(4).toString('hex').toUpperCase(),
       regular_price: 0,
       manage_stock: true,
       stock_quantity: 10,
