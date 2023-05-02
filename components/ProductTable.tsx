@@ -1,10 +1,9 @@
-
 import { ReatailOffers, Variation, productWithVariation } from '@/types/appProps'
 import Image from 'next/image'
 import useSWRMutation from 'swr/mutation'
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
-import { ChangeEvent, ChangeEventHandler, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import imgPlaceholder from '../public/img/placeholder-800x800.png'
 import { DataTable, DataTableRowToggleEvent, DataTableExpandedRows } from 'primereact/datatable';
 import { ColumnEditorOptions } from 'primereact/column';
@@ -13,7 +12,6 @@ import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
 import { Toast } from 'primereact/toast';
 import { OfferToUpdate } from '@/types/appProps';
-import { ObjectType } from 'typescript';
 
 async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
   const requestOptions = {
@@ -71,7 +69,7 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
       [key: string]: boolean;
     } = {};
 
-    Object.values(tableProducts!).forEach((p) => (_expandedRows[`${p.id}` as keyof ObjectType] = true));
+    Object.values(tableProducts!).forEach((p) => (_expandedRows[`${p.id}`] = true));
 
     setExpandedRows(_expandedRows);
   };

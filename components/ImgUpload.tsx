@@ -1,5 +1,5 @@
 import { Toast } from 'primereact/toast';
-import { FileUpload, ItemTemplateOptions, FileUploadFilesEvent, FileUploadSelectEvent, FileUploadHeaderTemplateOptions, FileUploadHandlerEvent } from 'primereact/fileupload';
+import { FileUpload, ItemTemplateOptions, FileUploadSelectEvent, FileUploadHeaderTemplateOptions, FileUploadHandlerEvent } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { FileImg } from '../types/appProps';

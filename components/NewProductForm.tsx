@@ -7,13 +7,9 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Divider } from 'primereact/divider';
 import { useFormik } from 'formik'
 import { Dropdown, DropdownProps, DropdownChangeEvent } from 'primereact/dropdown';
-import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
 import { Toast } from 'primereact/toast';
-import { Calendar } from 'primereact/calendar';
-import { addLocale } from 'primereact/api';
-
 
 
 type NewProductFormProps = {

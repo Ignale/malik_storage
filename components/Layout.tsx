@@ -1,4 +1,3 @@
-import React from 'react'
 import Side from './Side'
 import styled from '@emotion/styled';
 import { AppProps } from '@/types/appProps';

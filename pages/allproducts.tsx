@@ -1,8 +1,7 @@
 
 import Layout from '@/components/Layout'
-import { initializeApollo, addApolloState } from '../lib/apollo-client'
 import { ALL_PRODUCTS_QUERY } from '../lib/queries'
-import { ReatailOffers, products } from '../types/appProps'
+import { ReatailOffers } from '../types/appProps'
 import { Grid } from '@mui/material'
 import ProductTable from '@/components/ProductTable'
 import { Skeleton } from 'primereact/skeleton';
@@ -28,10 +27,8 @@ const Allproducts = () => {
   const Sceleton = () => {
     return (
       <>
-        <>
-        </>
-        {Array.from({ length: 10 }).map((el) => (
-          <div className="mb-3 mt-3">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div key={i} className="mb-3 mt-3">
             <Skeleton shape="rectangle" width="100%" height="80px" />
           </div>
         ))}
