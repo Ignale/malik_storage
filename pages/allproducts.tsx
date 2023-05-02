@@ -24,6 +24,8 @@ const Allproducts = () => {
   }
 
   console.log(data)
+
+  console.log(retData)
   const Sceleton = () => {
     return (
       <>
