@@ -24,7 +24,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         message: "Произошла ошибка при отправлении изображения",
         error: err.message });
   };
-    if((<any>!files.file).length) {
+    if(!Array.isArray(files.file)) {
       const file = files.file;
       api.media().auth({username: 'malik', password: 'malikmalik'})
       .file((<any>file).filepath)
@@ -53,8 +53,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     } else {
       const filesArr = files.file;
       const data: any = [];
-      
-      (<any>filesArr).forEach((file: any, i: any) => {
+      filesArr.forEach((file: any, i: any) => {
         api.media().auth({username: 'malik', password: 'malikmalik'})
       .file(file.filepath)
       .create({
@@ -68,7 +67,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           src: response.source_url,
           alt_text: response.alt_text
         })
-        if(i === (<any>filesArr).length - 1) {
+        if(i === filesArr.length - 1) {
           res.status(200).json({
           status: 'Успех!',
           message: "Изображения загружены",
