@@ -6,7 +6,7 @@ import ImgUpload from '@/components/ImgUpload'
 import ImgChoose from '@/components/ImgChoose'
 import { useState } from 'react'
 import { UploadData } from '@/components/ImgUpload'
-import client from '@/lib/apollo-client'
+import { initializeApollo } from '@/lib/apollo-client'
 import { ALL_CVET, ALL_PRODUCTS_CATEGORIES, ALL_SIZES } from '@/lib/queries'
 import { WooProductCategory, WooProductAttributes } from '@/types/appProps'
 import * as crypto from 'crypto';
@@ -46,6 +46,7 @@ export default function Addnew({ categories, attributes, sku }: AddnewProps) {
 }
 
 export async function getStaticProps() {
+  const client = initializeApollo()
   const { data: all_cvet } = await client.query({
     query: ALL_CVET,
   })

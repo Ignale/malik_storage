@@ -1,12 +1,12 @@
 
 import Layout from '@/components/Layout'
-import client from '../lib/apollo-client'
+import { initializeApollo, addApolloState } from '../lib/apollo-client'
 import { ALL_PRODUCTS_QUERY } from '../lib/queries'
 import { ReatailOffers, products } from '../types/appProps'
-import { SWRConfig } from 'swr'
 import { Grid } from '@mui/material'
 import ProductTable from '@/components/ProductTable'
-import { GetServerSidePropsContext } from 'next'
+import { Skeleton } from 'primereact/skeleton';
+import { useQuery } from '@apollo/client'
 
 
 
@@ -17,15 +17,27 @@ type AllproductsProps = {
     [key: string]: ReatailOffers
   }
 }
-const Allproducts = ({ products, fallback }: AllproductsProps) => {
-  // const { searchHandler, initialProducts, filterHandler, filteredProducts, filterValue } = useFilter(data, retData)
+const Allproducts = ({ products, }: AllproductsProps) => {
+
+  const { loading, data } = useQuery(ALL_PRODUCTS_QUERY, { variables: { first: 100 } })
+  console.log(data)
+  const Sceleton = () => {
+    return (
+      <>
+        {Array.from({ length: 8 }).map((el, i) => (
+          <div key={i} className="mb-3 mt-3">
+            <Skeleton shape="rectangle" width="100%" height="80px" />
+          </div>))}
+      </>
+    )
+  }
   return (
     <Layout>
       <Grid container alignItems={'center'} spacing={5}>
         <Grid item xs={12}>
-          <SWRConfig value={{ fallback }}>
-            <ProductTable products={products.products?.nodes} />
-          </SWRConfig>
+          {loading ?
+            <Sceleton />
+            : <ProductTable products={data.products?.nodes} />}
         </Grid>
       </Grid>
     </Layout>
@@ -33,24 +45,3 @@ const Allproducts = ({ products, fallback }: AllproductsProps) => {
 }
 
 export default Allproducts;
-
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  context.res.setHeader('Cache-Control', 's-maxage=10, stale-while-revalidate=59')
-  const { data } = await client.query({
-    query: ALL_PRODUCTS_QUERY,
-  })
-  const response = await fetch(`https://malik-brand.retailcrm.ru/api/v5/store/inventories?apiKey=${process.env.API_KEY}&limit=250`)
-  const retData = await response.json()
-  return (
-    {
-      props: {
-        products: data,
-        fallback: {
-          '/api/getRetialQuantity': retData,
-        },
-        revalidate: 60,
-      }
-    }
-  )
-}
