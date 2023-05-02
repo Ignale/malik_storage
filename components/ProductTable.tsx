@@ -14,8 +14,6 @@ import { Tag } from 'primereact/tag';
 import { Toast } from 'primereact/toast';
 import { OfferToUpdate } from '@/types/appProps';
 import { ObjectType } from 'typescript';
-import useSWR from 'swr'
-const fetcher = (url: string) => fetch(url, {}).then(r => r.json())
 
 async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
   const requestOptions = {
@@ -53,20 +51,18 @@ async function createProductCRM(url: string, { arg }: { arg: { product: productW
 
 type ProductTableProps = {
   products?: productWithVariation[]
+  retData?: ReatailOffers
 }
 
-export default function ProductTable({ products, }: ProductTableProps) {
+export default function ProductTable({ products, retData }: ProductTableProps) {
   const toast = useRef<Toast>(null);
-  const { data: retData, error: retError } = useSWR<ReatailOffers>('/api/getRetialQuantity', fetcher, {
-    refreshInterval: 1000
-  })
+
 
   const [globalFilter, setGlobalFilter] = useState('')
 
   const [tableProducts, setTableProducts] = useState<productWithVariation[] | undefined>(() => [...products!])
 
   const [retailTableData, setRetailTableData] = useState<ReatailOffers | undefined>(() => retData)
-  console.log(products)
 
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[]>([]);
 
@@ -164,9 +160,6 @@ export default function ProductTable({ products, }: ProductTableProps) {
       createTrigger<{ product: productWithVariation, variation: OfferToUpdate }>({ product: _products[parentIndex], variation: newData })
   };
 
-  if (retError && toast.current !== null) {
-    toast.current.show({ severity: 'error', summary: 'Ошибка', detail: retError.message, life: 3000 })
-  }
 
   const textEditor = (options: ColumnEditorOptions) => {
     return <InputText type="text" value={options.value} style={{ width: '100%' }} onChange={(e) => options.editorCallback?.(e.target.value)} />;
