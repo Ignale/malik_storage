@@ -71,7 +71,8 @@ export async function getStaticProps() {
           pa_size: all_size.allPaSize.nodes
         },
         sku
-      }
+      },
+      revalidate: 20
     }
   )
 }
