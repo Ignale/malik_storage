@@ -28,6 +28,8 @@ const Allproducts = () => {
   const Sceleton = () => {
     return (
       <>
+        <>
+        </>
         {Array.from({ length: 10 }).map((el) => (
           <div className="mb-3 mt-3">
             <Skeleton shape="rectangle" width="100%" height="80px" />
