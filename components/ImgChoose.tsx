@@ -55,8 +55,7 @@ function ImgChoose({ onChoose }: ImgChoseProps) {
         { label: 80, value: 80 }
       ];
       const itemsQuantityChange = (e: DropdownChangeEvent) => {
-        console.log(e)
-        console.log(options)
+
         setRows(e.value)
       }
       return (
@@ -69,7 +68,8 @@ function ImgChoose({ onChoose }: ImgChoseProps) {
       );
     },
     PrevPageLink: (options: PaginatorPrevPageLinkOptions) => {
-      console.log(options)
+
+
       const pagePrevHandler = () => {
         fetchMore({
           variables: {
@@ -136,14 +136,13 @@ function ImgChoose({ onChoose }: ImgChoseProps) {
 
   const footerContent = (
     <div >
-      <Button icon="pi pi-times" className="p-button-text" label='Отмена' onClick={() => { setVisible(false); setChosenImgs([]) }} />
+      <Button icon="pi pi-times" className="p-button-text" label='Отмена' onClick={() => { setVisible(false); setChosenImgs([]); onChoose([]) }} />
       <Button icon="pi pi-check" label='Выбрать' onClick={sendChosenImgHandler} />
     </div>
   )
   const chooseImgHandler = (e: React.SyntheticEvent, item: mediaItem) => {
-    console.log(chosenImgs)
     let index = chosenImgs.findIndex((img) => img.id === item.id)
-    console.log(index)
+
     if (index !== -1) {
       setChosenImgs((prev) => {
         const newImgArr = [...prev]

@@ -27,8 +27,8 @@ export default function Addnew({ categories, attributes, sku }: AddnewProps) {
   }
 
   const setChosenImgsHandler = (data: UploadData[]) => {
+    data.length === 0 ? setShowForm(() => false) : setShowForm(() => true)
     setUploadedImages(() => data)
-    setShowForm(() => true)
   }
 
   return (
