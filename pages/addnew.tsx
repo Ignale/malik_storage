@@ -26,16 +26,17 @@ export default function Addnew({ categories, attributes, sku }: AddnewProps) {
     setShowForm(() => true)
   }
 
-  // const setChosenImgsHandler = (data: UploadData[]) => {
-  //   setUploadedImages(() => data)
-  // }
+  const setChosenImgsHandler = (data: UploadData[]) => {
+    setUploadedImages(() => data)
+    setShowForm(() => true)
+  }
 
   return (
     <Layout>
       <h1 className='my-3'>Добавить новое платье</h1>
       <h2 className='my-3'>Сначала выберите изображения</h2>
       <ImgUpload onUpload={setImageHandler} />
-      {/* <ImgChoose onChoose={setChosenImgsHandler} /> */}
+      <ImgChoose onChoose={setChosenImgsHandler} />
       <Fieldset className='mt-3' >
         {uploadedImages.length ?
           <p>Добавлено {uploadedImages.length} изображений</p> :
