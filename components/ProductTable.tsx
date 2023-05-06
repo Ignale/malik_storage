@@ -1,8 +1,8 @@
-import { ReatailOffers, Variation, productWithVariation } from '@/types/appProps'
+import { DefData, ReatailOffers, Variation, productWithVariation } from '@/types/appProps'
 import Image from 'next/image'
 import useSWRMutation from 'swr/mutation'
 import { InputText } from 'primereact/inputtext';
-import { InputNumber } from 'primereact/inputnumber';
+import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
 import { useRef, useState } from 'react';
 import imgPlaceholder from '../public/img/placeholder-800x800.png'
 import { DataTable, DataTableRowToggleEvent, DataTableExpandedRows } from 'primereact/datatable';
@@ -12,6 +12,8 @@ import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
 import { Toast } from 'primereact/toast';
 import { OfferToUpdate } from '@/types/appProps';
+import styled from '@emotion/styled';
+import { devices } from '@/lib/mediaQueries';
 
 async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
   const requestOptions = {
@@ -50,9 +52,10 @@ async function createProductCRM(url: string, { arg }: { arg: { product: productW
 type ProductTableProps = {
   products?: productWithVariation[]
   retData?: ReatailOffers
+  defData?: DefData[]
 }
 
-export default function ProductTable({ products, retData }: ProductTableProps) {
+export default function ProductTable({ products, retData, defData }: ProductTableProps) {
   const toast = useRef<Toast>(null);
 
 
@@ -61,6 +64,8 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
   const [tableProducts, setTableProducts] = useState<productWithVariation[] | undefined>(() => [...products!])
 
   const [retailTableData, setRetailTableData] = useState<ReatailOffers | undefined>(() => retData)
+
+  const [defectTableData, setDefectTableData] = useState<DefData[] | undefined>(() => defData)
 
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[]>([]);
 
@@ -122,7 +127,7 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
     let parentIndex = Object.values(tableProducts!).findIndex((product) => product.variations.nodes.find((variation) => variation.databaseId === e.data.databaseId))
 
     setTableProducts((prev) => {
-      const newProdData = [...prev!]
+      const newProdData = structuredClone(prev!)
       newProdData[parentIndex].variations.nodes[index] = newData
       return newProdData
     }
@@ -143,7 +148,8 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
       productId: tableProducts![parentIndex].productId,
       variationId: newData.databaseId,
       count: newData.stockQuantity,
-      retailId: retailCount?.id
+      retailId: retailCount?.id,
+      defectData: defectTableData
     }
 
     retQuantity !== undefined ?
@@ -167,12 +173,12 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
 
   const header = (
     <div className="flex flex-wrap justify-content-end gap-2">
-      <span className="p-input-icon-left">
+      <MalikInputText className="p-input-icon-left">
         <i className="pi pi-search" />
-        <InputText onChange={searchHandler} placeholder="Поиск" />
-      </span>
-      <Button icon="pi pi-plus" onClick={expandAll} label="Расширить все" text />
-      <Button icon="pi pi-minus" onClick={collapseAll} label="Свернуть все" text />
+        <InputText onChange={searchHandler} style={{ width: '100%' }} placeholder="Поиск" />
+      </MalikInputText>
+      <MalikButtonExpantion icon="pi pi-plus" onClick={expandAll} label="Расширить все" text />
+      <MalikButtonExpantion icon="pi pi-minus" onClick={collapseAll} label="Свернуть все" text />
     </div>
   )
 
@@ -197,22 +203,48 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
     return 'success'
   }
 
-  const getManageStockSeverity = (rowData: Variation) => {
-    if (rowData.manageStock === 'TRUE' || rowData.stockQuantity !== null) return 'success'
-    return 'warning'
-  }
-
   const imageBodyTemplate = (rowData: Variation) => {
     return <Image style={{ objectFit: 'cover' }} className="shadow-4" width={50} height={70} src={rowData.featuredImage ? rowData.featuredImage.node.sourceUrl : imgPlaceholder} alt={rowData.name} />;
   };
 
-  const stockQuantityTemplate = (rowData: Variation) => (<Tag value={rowData.stockQuantity ? rowData.stockQuantity : 0} severity={getStockQuantitySeverity(rowData.stockQuantity)} ></Tag>)
+  const stockQuantityTemplate = (rowData: Variation) => {
+    const defQuantity = defectTableData?.find(data => data.databaseId === rowData.databaseId)?.defectQuantity
+    const stockQuantity = rowData.stockQuantity ?
+      defQuantity ? rowData.stockQuantity - defQuantity :
+        rowData.stockQuantity : 0
+
+    return (<Tag value={stockQuantity} severity={getStockQuantitySeverity(rowData.stockQuantity)} ></Tag>)
+  }
 
   const stockStatusTemplate = (rowData: Variation) => (<Tag value={(rowData.stockStatus === 'IN_STOCK' && (rowData.stockQuantity! > 0 && rowData.stockQuantity! <= 3)) ? 'Мало' :
     (rowData.stockQuantity! > 3) ? 'В наличии' :
       'Нет в наличии'} severity={getStockSeverity(rowData)} ></Tag>)
 
+  const defectTemplate = (rowData: Variation) => {
+    console.log(defectTableData)
+    const quantity = defectTableData?.find(data => data.databaseId == rowData.databaseId)?.defectQuantity
+    return quantity
+  }
 
+  const defectQuantityEditor = (options: ColumnEditorOptions) => {
+    console.log(options)
+    const editHandler = (e: InputNumberChangeEvent) => {
+      setDefectTableData((prev) => {
+        const newDefectData = [...prev!]
+        let newDefectDataIndex = newDefectData.findIndex((data) => data.databaseId === options.rowData.databaseId)
+        if (newDefectDataIndex !== -1) {
+          newDefectData[newDefectDataIndex].defectQuantity = e.value!
+          return newDefectData
+        }
+        newDefectData.push({
+          databaseId: options.rowData.databaseId,
+          defectQuantity: e.value!
+        })
+        return newDefectData
+      })
+    }
+    return <InputNumber size={1} onChange={editHandler} />
+  }
   const retailQuantityTemplate = (rowData: Variation) => {
 
     const quantity = retailTableData?.offers.find(offer => offer.externalId == rowData.databaseId)?.quantity
@@ -234,6 +266,8 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
           <Column style={{ width: '10%' }} field="price" header="Цена" sortable></Column>
           <Column style={{ width: '10%' }} header='Кол-во в CRM' body={retailQuantityTemplate}>
           </Column>
+          <Column style={{ width: '10%' }} field='defect_quantity' header='Брак' editor={defectQuantityEditor} body={defectTemplate}>
+          </Column>
           <Column style={{ width: '10%' }} rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
         </DataTable>
       </div>
@@ -243,15 +277,32 @@ export default function ProductTable({ products, retData }: ProductTableProps) {
   return (
     <>
       <Toast ref={toast} />
-      <DataTable value={tableProducts} editMode='row' onRowToggle={(e: DataTableRowToggleEvent) => setExpandedRows(e.data)}
+      <MalikDataTable value={tableProducts} editMode='row' onRowToggle={(e: DataTableRowToggleEvent) => setExpandedRows(e.data)}
         expandedRows={expandedRows} rowExpansionTemplate={rowExpansionTemplate}
         filterDisplay="menu" globalFilter={globalFilter} globalFilterFields={['name', 'variations.nodes.name']}
-        dataKey="id" header={header} tableStyle={{ minWidth: '60rem' }}>
+        dataKey="id" header={header}>
         <Column expander style={{ width: '3em' }} />
         <Column field="name" header="Название" />
         <Column body={(rowData: productWithVariation) => rowData.variations.nodes.reduce((acc, curr) => acc + (curr.stockQuantity === null ? 0 : curr.stockQuantity), 0)} header="Количество" />
-      </DataTable>
+      </MalikDataTable>
     </>
   )
 }
+
+
+const MalikDataTable = styled(DataTable)({
+  minWidth: '20rem'
+})
+
+const MalikButtonExpantion = styled(Button)({
+  [devices.mobileL]: {
+    fontSize: '0!important'
+  }
+})
+
+const MalikInputText = styled('span')({
+  [devices.mobileL]: {
+    width: '100%!important'
+  }
+})
 

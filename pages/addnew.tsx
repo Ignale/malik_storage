@@ -33,7 +33,7 @@ export default function Addnew({ categories, attributes, sku }: AddnewProps) {
 
   return (
     <Layout>
-      <h1 className='my-3'>Добавить новое платье</h1>
+      <h1 className='my-3'>Добавить новое</h1>
       <h2 className='my-3'>Сначала выберите изображения</h2>
       <ImgUpload onUpload={setImageHandler} />
       <ImgChoose onChoose={setChosenImgsHandler} />

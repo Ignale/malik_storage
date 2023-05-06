@@ -26,6 +26,12 @@ export default async function(req: NextApiRequest,res: NextApiResponse) {
   urlencoded.append("offers", retailData);
   try{
     const wooResponse = await api.put(`products/${arg.productId}/variations/${arg.variationId}`, wooData)
+    
+    const defResponse = await fetch('https://malik-storage-default-rtdb.firebaseio.com/defects/.json', {
+      method: 'PUT',
+      body: JSON.stringify(arg.defectData)
+    })
+    const updatedDefData = defResponse.json()
     // const wooProduct = await api.get(`products/${arg.productId}/variations/${arg.variationId}`)
 
     const retResponse = await fetch(`https://malik-brand.retailcrm.ru/api/v5/store/inventories/upload?apiKey=${process.env.API_KEY}`, {
@@ -36,7 +42,7 @@ export default async function(req: NextApiRequest,res: NextApiResponse) {
       body: urlencoded
     })
     const message = await retResponse.text()
-    return res.status(200).json({woo: wooResponse.data, ret: message})
+    return res.status(200).json({woo: wooResponse.data, ret: message, def: updatedDefData})
   } catch (error) {
     console.log(error)
     return res.status(500).json(error)

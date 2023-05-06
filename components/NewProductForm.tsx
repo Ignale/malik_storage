@@ -6,7 +6,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from 'primereact/multiselect';
 import { Divider } from 'primereact/divider';
 import { useFormik } from 'formik'
-import { Dropdown, DropdownProps, DropdownChangeEvent } from 'primereact/dropdown';
+import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
 import { Toast } from 'primereact/toast';

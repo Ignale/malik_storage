@@ -1,7 +1,7 @@
 
 import Layout from '@/components/Layout'
 import { ALL_PRODUCTS_QUERY } from '../lib/queries'
-import { ReatailOffers } from '../types/appProps'
+import { ReatailOffers, DefData } from '../types/appProps'
 import { Grid } from '@mui/material'
 import ProductTable from '@/components/ProductTable'
 import { Skeleton } from 'primereact/skeleton';
@@ -16,6 +16,9 @@ const Allproducts = () => {
   const toast = useRef<Toast>(null);
   const { loading, data } = useQuery(ALL_PRODUCTS_QUERY, { variables: { first: 100 } })
   const { data: retData, error: retError } = useSWR<ReatailOffers>('/api/getRetialQuantity', fetcher, {
+    refreshInterval: 1000
+  })
+  const { data: defData, error: defError } = useSWR<DefData[]>('/api/getDefectquantity', fetcher, {
     refreshInterval: 1000
   })
 
@@ -42,7 +45,7 @@ const Allproducts = () => {
       <Toast ref={toast} />
       <Grid container alignItems={'center'} spacing={5}>
         <Grid item xs={12}>
-          {loading ? <Sceleton /> : <ProductTable retData={retData} products={data?.products?.nodes} />}
+          {loading ? <Sceleton /> : <ProductTable defData={defData} retData={retData} products={data?.products?.nodes} />}
         </Grid>
       </Grid>
     </Layout>

@@ -15,6 +15,7 @@ export interface Variation {
   price: string;
   manageStock: string | never;
   databaseId: string;
+  metaData: wooMeta[]
   featuredImage: {
     node: {
       sourceUrl: string
@@ -58,7 +59,11 @@ export type OfferToUpdate = {
   count : number | null
 }
 
+export type DefData = {
+  databaseId: Key
 
+defectQuantity: number
+}
 export interface WooProductVariation {
   regular_price: string;
   id: Key;
@@ -120,7 +125,7 @@ type wooProductAttribute = {
   options: string[]
 }
 type wooMeta = {
-  key?: 'product_description' | 'product_care' | 'product_measurements' | 'model_measurements' | 'shipping',
+  key?: 'product_description' | 'product_care' | 'product_measurements' | 'model_measurements' | 'shipping' | 'defect_quantity'
   value: string,
 }
 
@@ -185,4 +190,15 @@ export type WooProductAttribute= {
   databaseId: number,
   name: string,
   id: Key
+}
+
+
+export type Sertificate = {
+  amount?: number
+  code?: string
+  date?: string
+  giver?: string
+  reciever?: string
+  manager?: string
+  status?: 'used' | 'active' | ''
 }

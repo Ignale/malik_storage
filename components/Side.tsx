@@ -5,6 +5,7 @@ import logo from '../public/img/logo_black.png'
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import AddBusinessIcon from '@mui/icons-material/AddBusiness';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import { devices } from '../lib/mediaQueries'
 import { useRouter } from "next/router";
 
 type pathProps = {
@@ -45,6 +46,7 @@ const Side = () => {
 
 export default Side;
 
+
 const SideBar = styled.div({
   display: 'flex',
   flexDirection: 'column',
@@ -54,14 +56,25 @@ const SideBar = styled.div({
   backgroundColor: '#3b3a48',
   alignItems: 'center',
   paddingLeft: '10px',
-  paddingRight: '10px'
+  paddingRight: '10px',
 
+  [devices.tablet]: {
+    position: 'absolute',
+    zIndex: 10,
+    bottom: '0',
+    left: '0',
+    width: '100vw',
+    height: '10vh',
+  }
 })
 
 const LogoWrapper = styled.div({
   flexBasis: '10vh',
   display: 'flex',
-  alignItems: 'center'
+  alignItems: 'center',
+  [devices.tablet]: {
+    display: 'none'
+  }
 })
 
 const Logo = styled(Image)({
@@ -74,7 +87,12 @@ const Menu = styled.div({
   flexBasis: '60vh',
   width: '100%',
   borderTop: '2px solid #4b4b59',
-  borderBottom: '2px solid #4b4b59'
+  borderBottom: '2px solid #4b4b59',
+  [devices.tablet]: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    borderBottom: 'none',
+  }
 })
 
 const MenuItem = styled('div')<pathProps>(props => ({
@@ -85,6 +103,9 @@ const MenuItem = styled('div')<pathProps>(props => ({
   a: {
     display: 'flex',
     alignItems: 'center',
-    color: props.path ? '#b1b1d3' : '#818199'
+    color: props.path ? '#b1b1d3' : '#818199',
+    [devices.tablet]: {
+      fontSize: 0
+    }
   }
 }))

@@ -6,6 +6,8 @@ import { gql, useQuery } from '@apollo/client'
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Paginator, PaginatorPrevPageLinkOptions, PaginatorRowsPerPageDropdownOptions } from 'primereact/paginator';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
+import { devices } from '@/lib/mediaQueries';
+import styled from '@emotion/styled';
 
 
 type ImgChoseProps = {
@@ -63,13 +65,11 @@ function ImgChoose({ onChoose }: ImgChoseProps) {
           <span className="mx-1" style={{ color: 'var(--text-color)', userSelect: 'none' }}>
             Количество изображений на странице:{' '}
           </span>
-          <Dropdown className='mr-3' value={rows} options={dropdownOptions} onChange={itemsQuantityChange} />
+          <Dropdown className='mr-3 mt-3' value={rows} options={dropdownOptions} onChange={itemsQuantityChange} />
         </>
       );
     },
     PrevPageLink: (options: PaginatorPrevPageLinkOptions) => {
-
-
       const pagePrevHandler = () => {
         fetchMore({
           variables: {
@@ -90,7 +90,7 @@ function ImgChoose({ onChoose }: ImgChoseProps) {
       }
       return (
         <>
-          <Button icon="pi pi-angle-left" className="mr-10" onClick={pagePrevHandler} disabled={!data?.mediaItems.pageInfo.hasPreviousPage} />
+          <Button icon="pi pi-angle-left" className="mr-10 mt-3" onClick={pagePrevHandler} disabled={!data?.mediaItems.pageInfo.hasPreviousPage} />
         </>
       )
     },
@@ -116,7 +116,7 @@ function ImgChoose({ onChoose }: ImgChoseProps) {
 
       return (
         <>
-          <Button icon="pi pi-angle-right" style={{ marginLeft: '10px' }} onClick={pageNextHandler} disabled={!data?.mediaItems.pageInfo.hasNextPage} />
+          <Button icon="pi pi-angle-right" className="mt-3" style={{ marginLeft: '10px' }} onClick={pageNextHandler} disabled={!data?.mediaItems.pageInfo.hasNextPage} />
         </>
       )
     }
@@ -135,7 +135,7 @@ function ImgChoose({ onChoose }: ImgChoseProps) {
   }
 
   const footerContent = (
-    <div >
+    <div style={{ paddingTop: '20px' }} >
       <Button icon="pi pi-times" className="p-button-text" label='Отмена' onClick={() => { setVisible(false); setChosenImgs([]); onChoose([]) }} />
       <Button icon="pi pi-check" label='Выбрать' onClick={sendChosenImgHandler} />
     </div>
@@ -160,8 +160,8 @@ function ImgChoose({ onChoose }: ImgChoseProps) {
   return (
     <div className='my-3' >
       <Button label='Или выберите изображения' onClick={() => setVisible(true)} />
-      <Dialog style={{ width: '80vw' }} visible={visible} footer={footerContent} onHide={() => setVisible(false)}>
-        <h1>Выберите изображения</h1>
+      <MalikDialog visible={visible} footer={footerContent} onHide={() => setVisible(false)}>
+        <h1 >Выберите изображения</h1>
         <div className='flex flex-wrap'>
           {loading && <div style={{ width: '100%', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ProgressSpinner /></div>}
           {!loading && data?.mediaItems.nodes.map((item: mediaItem) => {
@@ -182,9 +182,29 @@ function ImgChoose({ onChoose }: ImgChoseProps) {
         </div>
         <Paginator template={paginateTemplate} first={first} rows={rows} totalRecords={1200} className="justify-content-start" />
 
-      </Dialog>
+      </MalikDialog>
     </div >
   )
 }
 
 export default ImgChoose
+
+const MalikDialog = styled(Dialog)({
+  width: '80vw',
+  [devices.mobileL]: {
+    width: '100vw',
+    height: '100%',
+    h1: {
+      fontSize: '1.5rem'
+    },
+    img: {
+      width: '50px',
+      height: '50px'
+    },
+    button: {
+      span: {
+        fontSize: '0.8rem'
+      }
+    }
+  }
+})
