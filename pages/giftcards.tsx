@@ -14,7 +14,7 @@ export default function Giftcards({ sertificates }: SertificatesProps) {
   )
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const response = await fetch('https://malik-storage-default-rtdb.firebaseio.com/sertificates.json')
   const sertificates = await response.json()
   console.log(sertificates)

@@ -7,9 +7,7 @@ export default async function mutateSert(req: NextApiRequest, res: NextApiRespon
       method: "PUT",
       body: req.body
     })
-    const data = await response.json()
-
-    console.log(data) 
+    const data = await response.json() 
 
     return res.status(200).json(data)
 
