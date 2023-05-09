@@ -1,15 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import wc from '../../lib/wc'
+import { DefData } from '@/types/appProps'
  const api = wc()
 
 export default async function(req: NextApiRequest,res: NextApiResponse) {
 
- 
+  
   const arg = JSON.parse(req.body)
+  
   const wooData = {
     manage_stock: true,
     stock_quantity: arg.count,
  }
+
+
+
   const retailData = JSON.stringify([
     {
       id: arg.retailId,
