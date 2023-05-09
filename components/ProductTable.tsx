@@ -32,7 +32,7 @@ async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
 
 }
 
-async function createProductCRM(url: string, { arg }: { arg: { product: productWithVariation, variation: OfferToUpdate } }) {
+async function createProductCRM(url: string, { arg }: { arg: { product: productWithVariation, variation: Variation } }) {
   const requestOptions = {
     method: 'POST',
     body: JSON.stringify(arg),
@@ -153,7 +153,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
 
     setTableProducts((prev) => {
       const newProdData = structuredClone(prev!)
-      newProdData[parentIndex].variations.nodes[index] = newData
+      newProdData[parentIndex].variations.nodes[index] = newData as Variation
       return newProdData
     }
     )
@@ -179,7 +179,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
 
     retQuantity !== undefined ?
       trigger<OfferToUpdate>(args) :
-      createTrigger<{ product: productWithVariation, variation: OfferToUpdate }>({ product: tableProducts![parentIndex], variation: newData })
+      createTrigger<{ product: productWithVariation, variation: OfferToUpdate }>({ product: tableProducts![parentIndex], variation: newData as Variation })
   };
 
 

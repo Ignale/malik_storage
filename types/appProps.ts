@@ -61,8 +61,8 @@ export type OfferToUpdate = {
 
 export type DefData = {
   databaseId: Key
-
-defectQuantity: number
+  fullQuantity: number
+  defectQuantity: number
 }
 export interface WooProductVariation {
   regular_price: string;
