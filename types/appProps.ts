@@ -32,6 +32,7 @@ export interface productWithVariation {
   id: Key;
   name: string;
   productId: string;
+  link: string;
   variations:{
     nodes:Variation[]
   }  

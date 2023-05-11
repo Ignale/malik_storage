@@ -284,7 +284,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
         <h4 className='mb-4'>Вариации для {data.name}</h4>
         <DataTable dataKey='id' editMode='row' onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }} value={data.variations.nodes}>
           <Column style={{ width: '10%' }} field="featuredImage" header="Изображение" body={imageBodyTemplate}></Column>
-          <Column style={{ width: '20%' }} field="name" header="Название" editor={textEditor} sortable></Column>
+          <Column style={{ width: '20%' }} field="name" body={(rowData: Variation) => rowData.name + ` (id: ${rowData.databaseId})`} header="Название" editor={textEditor} sortable></Column>
           <Column style={{ width: '15%' }} field="stockStatus" header="Наличие" sortable body={stockStatusTemplate}></Column>
           <Column style={{ width: '15%' }} field="stockQuantity" editor={numberEditor} header="Кол-во в магазине" body={stockQuantityTemplate} sortable></Column>
           <Column style={{ width: '10%' }} field="price" header="Цена" sortable></Column>
@@ -306,7 +306,13 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
         filterDisplay="menu" globalFilter={globalFilter} globalFilterFields={['name', 'variations.nodes.name']}
         dataKey="id" header={header}>
         <Column expander style={{ width: '3em' }} />
-        <Column field="name" header="Название" />
+        <Column field="name" body={(rowData: productWithVariation) => (
+          <>
+            <a style={{ fontWeight: 600 }} href={`${rowData.link}`}>
+              {rowData.name}
+            </a>
+          </>
+        )} header="Название" />
         <Column body={(rowData: productWithVariation) => rowData.variations.nodes.reduce((acc, curr) => acc + (curr.stockQuantity === null ? 0 : curr.stockQuantity), 0)} header="Количество" />
       </MalikDataTable>
     </>
