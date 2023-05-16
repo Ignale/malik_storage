@@ -5,7 +5,7 @@ import { InputText } from 'primereact/inputtext';
 import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
 import { useRef, useState } from 'react';
 import imgPlaceholder from '../public/img/placeholder-800x800.png'
-import { DataTable, DataTableRowToggleEvent, DataTableExpandedRows, DataTableRowEditCompleteEvent } from 'primereact/datatable';
+import { DataTable, DataTableRowToggleEvent, DataTableExpandedRows, DataTableRowEditCompleteEvent, DataTableRowEditEvent } from 'primereact/datatable';
 import { ColumnEditorOptions } from 'primereact/column';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -123,26 +123,16 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     const defQuantity = defectTableData?.find(data => data.databaseId === newData.databaseId);
     const defQindex = defectTableData?.findIndex(data => data.databaseId === newData.databaseId);
 
-    if (defQuantity && defQuantity.defectQuantity !== 0) {
-      if (newData.stockQuantity !== data.stockQuantity) {
-        newData.stockQuantity = newData.stockQuantity - defQuantity.defectQuantity
-        defQuantity!.fullQuantity = newData.stockQuantity
+    if (defQuantity && defQuantity.defectQuantity !== 0) { //проверяем на наличие дефектов
+      if (newData.stockQuantity !== data.stockQuantity) { // проверяем было ли измненено количество платьев
+        defQuantity!.fullQuantity = newData.stockQuantity + defQuantity.defectQuantity // обновляем общее количество товаров, включая брак
       } else {
         newData.stockQuantity = defQuantity.fullQuantity - defQuantity.defectQuantity
-        defQuantity!.fullQuantity = newData.stockQuantity + defQuantity?.defectQuantity!
       }
 
-    } else if (defQuantity && defQuantity.defectQuantity === 0) {
-      if (newData.stockQuantity !== data.stockQuantity) {
-        defQuantity.fullQuantity = newData.stockQuantity
-      } else {
-        newData.stockQuantity = defQuantity.fullQuantity
-      }
-      setDefectTableData((prev) => {
-        const newDef = [...prev!]
-        newDef.splice(defQindex!, 1)
-        return newDef
-      })
+    } else if (defQuantity && defQuantity.defectQuantity === 0) {// если дефектов нет 
+      setDefectTableData((prev) => [...prev!].splice(defQindex!, 1)) // удаляем запись о дефектах
+
     }
 
     const retQuantity = retailTableData?.offers.find(offer => offer.externalId == newData.databaseId)?.quantity
@@ -245,13 +235,16 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
 
   const defectTemplate = (rowData: Variation) => {
     console.log(defectTableData)
-    const quantity = defectTableData?.find(data => data.databaseId == rowData.databaseId)?.defectQuantity
-    return quantity
+    console.log(rowData)
+    const quantity = defectTableData && defectTableData[defectTableData.findIndex(data => data.databaseId === rowData.databaseId)]?.defectQuantity
+    console.log(quantity)
+    return quantity ?? 0
   }
 
   const defectQuantityEditor = (options: ColumnEditorOptions) => {
     console.log(options)
     const editHandler = (e: InputNumberChangeEvent) => {
+      console.log('edit')
       setDefectTableData((prev) => {
         const newDefectData = prev ? [...prev!] : []
         let newDefectDataIndex = newDefectData.findIndex((data) => data.databaseId === options.rowData.databaseId)
