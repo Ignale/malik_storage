@@ -1,6 +1,6 @@
 import { DefData, ReatailOffers, Variation, productWithVariation } from '@/types/appProps'
 import Image from 'next/image'
-import { exportToExcel } from 'react-json-to-excel'
+import * as xlsx from 'xlsx'
 import useSWRMutation from 'swr/mutation'
 import { InputText } from 'primereact/inputtext';
 import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
@@ -189,13 +189,17 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
 
   const exportCSV = () => {
     const obejctToExport = [] as any
-    tableProducts.map((product) => product.variations.nodes.map((variation) => (obejctToExport.push({ 'Название': variation.name, 'Количество': variation.stockQuantity }))))
+    tableProducts.forEach((product) => product.variations.nodes.forEach((variation) => (obejctToExport.push({ 'Название': variation.name, 'Количество': variation.stockQuantity }))))
     console.log(obejctToExport)
-    exportToExcel(obejctToExport, 'productBackup')
+    const worksheet = xlsx.utils.json_to_sheet(obejctToExport);
+    const workbook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    xlsx.writeFile(workbook, "DataSheet.xlsx");
   }
 
   const header = (
-    <div className="flex flex-wrap justify-content-end gap-2">
+    <div className="flex flex-wrap justify-content-end gap-3">
+      <Button label="Скачать exel" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
       <MalikInputText className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText onChange={searchHandler} style={{ width: '100%' }} placeholder="Поиск" />
@@ -280,9 +284,6 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
       <Tag severity={(quantity !== rowData.stockQuantity && rowData.stockQuantity !== null) ? 'warning' : 'info'} value={value}></Tag>)
   }
 
-  const endTemplateContent = () => {
-    return <Button label="Скачать exel" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
-  }
 
   const rowExpansionTemplate = (data: productWithVariation) => {
     return (
@@ -307,7 +308,6 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
   return (
     <>
       <Toast ref={toast} />
-      <Toolbar className="mb-4" end={endTemplateContent} ></Toolbar>
       <MalikDataTable value={tableProducts} editMode='row' onRowToggle={(e: DataTableRowToggleEvent) => setExpandedRows(e.data)}
         expandedRows={expandedRows} rowExpansionTemplate={rowExpansionTemplate}
         filterDisplay="menu" globalFilter={globalFilter} globalFilterFields={['name', 'variations.nodes.name']}
