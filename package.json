@@ -41,6 +41,7 @@
     "formidable": "^2.1.1",
     "formik": "^2.2.9",
     "gh-pages": "^5.0.0",
+    "googleapis": "^124.0.0",
     "graphql": "^16.6.0",
     "lodash": "^4.17.21",
     "next": "13.2.4",

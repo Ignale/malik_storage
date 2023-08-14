@@ -26,9 +26,6 @@ const Allproducts = () => {
     toast.current.show({ severity: 'error', summary: 'Ошибка', detail: retError.message, life: 3000 })
   }
 
-  console.log(data)
-
-  console.log(retData)
   const Sceleton = () => {
     return (
       <>

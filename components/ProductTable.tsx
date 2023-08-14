@@ -281,7 +281,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
   }
 
   const endTemplateContent = () => {
-    return <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
+    return <Button label="Скачать exel" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
   }
 
   const rowExpansionTemplate = (data: productWithVariation) => {
