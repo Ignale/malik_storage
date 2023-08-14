@@ -9,7 +9,6 @@ import { UploadData } from '@/components/ImgUpload'
 import { initializeApollo } from '@/lib/apollo-client'
 import { ALL_CVET, ALL_PRODUCTS_CATEGORIES, ALL_SIZES } from '@/lib/queries'
 import { WooProductCategory, WooProductAttributes } from '@/types/appProps'
-import * as crypto from 'crypto';
 
 type AddnewProps = {
   categories: WooProductCategory

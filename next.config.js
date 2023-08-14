@@ -50,12 +50,6 @@ schedule.scheduleJob('0 0 * * *', async function () {
     const obejctToExport = []
     data.products.nodes.forEach((product) => product.variations.nodes.forEach((variation) => (obejctToExport.push({ 'Название': variation.name, 'Количество': variation.stockQuantity }))))
 
-    // console.log(obejctToExport)
-    const spreadsheetData = [
-      { Name: 'John', Age: 28 },
-      { Name: 'Jane', Age: 24 },
-      // Add more objects here
-    ];
     const workBook = XLSX.utils.book_new(); //creating new book in exel sheet
 
     const workSheet = XLSX.utils.json_to_sheet(obejctToExport) //json_to_sheet method converts array of object to sheet
