@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "malikbackups",
+  "private_key_id": "50592b2b03358f57f6ee58c98cee0706d037b284",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDDLYK/p27tao7S\nKi/zzlNrPDLi/Bj+6w6Tl6QmFkdh5m+iXOXMTl1ifIJfhYixpxZDvrLsQDNGAj1l\n9MWmRdQZQcnj3+VMlpjdqi/GsRUBD+zEVza1YDH3VRedHx+f1T0yCENSgUfOjYGH\nW2xgxwrKJQH9HE6IFMmcBis85p46/cFvtRLAHAoCtmFQAFi16CqN+wXXXOOBu98c\nkkxn+la125MvXbJH2hCu9XEEzoSw+fHui34Fu1bM0+6mt+3vSzCumyCnYNfNj7CQ\nCUa1o/YvPr//Ux+UoOns0o7tbCUfTTo8vH0+NQaUaqXHNqniLPvwIaGUfYKPfn48\nTVf9SEp/AgMBAAECggEAFu1ZLw9Jig0a4tg+0sp5ZR7osV5Ax20wRKkrCKhUUU1C\n7tUvz1yjPqb2n6bthETm6iVUGkl+XGp18OycbShFvoPKZgDOjD0ijuNnglUZ7QqE\nWxoNnKfEptOxluzph5qCekabNe1m1H4t6YsVQ5cODuni/msdVIHwnungmWJT0wT4\nKJxmfyDG3Sq3NCGNrigt/aMJ8ktimG7xVotmFS/20RzhgRSEMWdoROQLRTJWH+Lf\nWMDDcd6bWSleiK9TkGIdtZqY5qHq53qBiwxJvGATNA0XZB/rSv/USW9Fgg/N7Bdv\nbTg8g4ugUw6AJ4gcBeXoWAET5JYJ78vz0+PqUvc2+QKBgQD5Q8yOnq/miW9PeOs5\nlenJ2n7eQq9kfo7yxrasjjSetwfSV6lXS+gS1zvMsUGEaPZR7kYY7q+OMVIIHxOr\n1gbtLDVBSY0KAknsc8Emd3IEBY/ztV2PJUlXIabuiRz1FJgTWwbA5T1o446pqucW\n2BqkhRCbxhcshtOS+GUOfhWfiQKBgQDIc5VpqPhZ4L4N1pd/RQrcApwsuVQQs2qV\nEA0vIs++k7ZA9/WfVr1plwEDvQ9LD3eWgMqIxC1g9v8XqOIEjn60A60iUHLvnbOz\nVRm6bsjL7x0zXeJc+m+wadpXRgWZSrELZIoRBHuV9BHl3PRkZsRwD9J+T322W3jN\nYDbj/s5PxwKBgEYKPf1JK6X8sjFDid0JecLFSWbMmBoF0cb3/TZpUvHR/jmldijY\nZGJ+5gezOvSoxaXp7PpufxfWVfWAPffH0PRtup0YvK+2Su1M7VYQtBHbOkLBkIN7\nd6srAov+LQvUeJLfvfsPrvy9DEYyhnKN0Jav6SXMOJDDZcnjUAoNdaf5AoGAEU/K\nK6HoMPrz7wYFd3xi/7VJ/6LR289i+RS1zshW4MKpDttbXzOCkEf2UnhVhcoELf9Z\nfo5SzPkH9uci/fnAf5OBtGD2TDN2fZpv6mX++X3hK7qD/juywa2iqb7mZOLKf41j\nTyzv73dwxEVc5f7qIDN9nmMHHGSx/iq9EtvCvakCgYEA4SGA4A+qShSmbAJKvlEt\nVc/FIfCJgYQv/Leu4grv1MFsjUk7g0n8Mfa+QQfeq/lLuXm1h8d2VtdrdbSy4JAO\nRXrQI0Kaqq6yxZ0i/S3nOJVJwj0bWRmoqqp+uufj24DL6wlkNbdLtObR9sD3enlE\n/Pe3PekBAOi/2j1wsIHqfVo=\n-----END PRIVATE KEY-----\n",
+  "client_email": "admin-924@malikbackups.iam.gserviceaccount.com",
+  "client_id": "100141038590150969188",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/admin-924%40malikbackups.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

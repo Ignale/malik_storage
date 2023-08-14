@@ -16,6 +16,8 @@ export interface Variation {
   manageStock: string | never;
   databaseId: string;
   metaData: wooMeta[]
+  defectQuantity?: number
+  retailQuantity?: number
   featuredImage: {
     node: {
       sourceUrl: string
@@ -32,7 +34,7 @@ export interface productWithVariation {
   id: Key;
   name: string;
   productId: string;
-  link: string;
+  link: string
   variations:{
     nodes:Variation[]
   }  

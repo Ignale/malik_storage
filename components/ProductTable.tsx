@@ -1,11 +1,13 @@
 import { DefData, ReatailOffers, Variation, productWithVariation } from '@/types/appProps'
 import Image from 'next/image'
+import { exportToExcel } from 'react-json-to-excel'
 import useSWRMutation from 'swr/mutation'
 import { InputText } from 'primereact/inputtext';
 import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
 import { useRef, useState } from 'react';
+import { Toolbar } from 'primereact/toolbar';
 import imgPlaceholder from '../public/img/placeholder-800x800.png'
-import { DataTable, DataTableRowToggleEvent, DataTableExpandedRows, DataTableRowEditCompleteEvent, DataTableRowEditEvent } from 'primereact/datatable';
+import { DataTable, DataTableRowToggleEvent, DataTableExpandedRows, DataTableRowEditCompleteEvent } from 'primereact/datatable';
 import { ColumnEditorOptions } from 'primereact/column';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -58,10 +60,9 @@ type ProductTableProps = {
 export default function ProductTable({ products, retData, defData }: ProductTableProps) {
   const toast = useRef<Toast>(null);
 
-
   const [globalFilter, setGlobalFilter] = useState('')
 
-  const [tableProducts, setTableProducts] = useState<productWithVariation[] | undefined>(() => [...products!])
+  const [tableProducts, setTableProducts] = useState<productWithVariation[] | []>(() => [...products!])
 
   const [retailTableData, setRetailTableData] = useState<ReatailOffers | undefined>(() => retData)
 
@@ -186,6 +187,13 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     setGlobalFilter(value);
   }
 
+  const exportCSV = () => {
+    const obejctToExport = [] as any
+    tableProducts.map((product) => product.variations.nodes.map((variation) => (obejctToExport.push({ 'Название': variation.name, 'Количество': variation.stockQuantity }))))
+    console.log(obejctToExport)
+    exportToExcel(obejctToExport, 'productBackup')
+  }
+
   const header = (
     <div className="flex flex-wrap justify-content-end gap-2">
       <MalikInputText className="p-input-icon-left">
@@ -194,6 +202,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
       </MalikInputText>
       <MalikButtonExpantion icon="pi pi-plus" onClick={expandAll} label="Расширить все" text />
       <MalikButtonExpantion icon="pi pi-minus" onClick={collapseAll} label="Свернуть все" text />
+
     </div>
   )
 
@@ -271,6 +280,10 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
       <Tag severity={(quantity !== rowData.stockQuantity && rowData.stockQuantity !== null) ? 'warning' : 'info'} value={value}></Tag>)
   }
 
+  const endTemplateContent = () => {
+    return <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
+  }
+
   const rowExpansionTemplate = (data: productWithVariation) => {
     return (
       <div className="p-3">
@@ -294,6 +307,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
   return (
     <>
       <Toast ref={toast} />
+      <Toolbar className="mb-4" end={endTemplateContent} ></Toolbar>
       <MalikDataTable value={tableProducts} editMode='row' onRowToggle={(e: DataTableRowToggleEvent) => setExpandedRows(e.data)}
         expandedRows={expandedRows} rowExpansionTemplate={rowExpansionTemplate}
         filterDisplay="menu" globalFilter={globalFilter} globalFilterFields={['name', 'variations.nodes.name']}

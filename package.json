@@ -10,6 +10,16 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "devDependencies": {
+    "@testing-library/jest-dom": "5.16.4",
+    "@testing-library/react": "14.0.0",
+    "@testing-library/user-event": "14.4.3",
+    "@types/react": "18.0.28",
+    "@types/testing-library__jest-dom": "5.14.5",
+    "jest": "29.5.0",
+    "jest-environment-jsdom": "29.5.0",
+    "typescript": "4.9.5"
+  },
   "dependencies": {
     "@apollo/client": "^3.7.10",
     "@emotion/css": "^11.10.6",
@@ -27,21 +37,25 @@
     "deepmerge": "^4.3.1",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
+    "file-saver": "^2.0.5",
     "formidable": "^2.1.1",
     "formik": "^2.2.9",
     "gh-pages": "^5.0.0",
     "graphql": "^16.6.0",
     "lodash": "^4.17.21",
     "next": "13.2.4",
+    "node-schedule": "^2.1.1",
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
     "primereact": "^9.2.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-json-to-excel": "^1.0.7",
     "retailcrm": "^0.9.0",
     "swr": "^2.1.2",
     "typescript": "5.0.2",
     "uuidv4": "^6.2.13",
-    "wpapi": "^1.2.2"
+    "wpapi": "^1.2.2",
+    "xlsx": "^0.18.5"
   }
 }
