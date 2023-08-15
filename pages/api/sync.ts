@@ -13,8 +13,6 @@ export default async function(req: NextApiRequest,res: NextApiResponse) {
     stock_quantity: arg.count,
  }
 
-
-
   const retailData = JSON.stringify([
     {
       id: arg.retailId,
@@ -47,6 +45,8 @@ export default async function(req: NextApiRequest,res: NextApiResponse) {
       body: urlencoded
     })
     const message = await retResponse.text()
+
+    console.log({woo: wooResponse.data, ret: message, def: updatedDefData})
     return res.status(200).json({woo: wooResponse.data, ret: message, def: updatedDefData})
   } catch (error) {
     console.log(error)
