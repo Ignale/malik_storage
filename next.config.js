@@ -40,7 +40,7 @@ const uploadToGoogleDrive = async (file, auth) => {
   return response;
 };
 
-schedule.scheduleJob('* * * * *', async function () {
+schedule.scheduleJob('0 0 * * *', async function () {
 
   try {
     const { data } = await client.client.query({
