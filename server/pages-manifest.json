@@ -2,16 +2,16 @@
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
   "/_error": "pages/_error.js",
-  "/allproducts": "pages/allproducts.html",
   "/api/createInCRM": "pages/api/createInCRM.js",
   "/api/createProduct": "pages/api/createProduct.js",
+  "/allproducts": "pages/allproducts.html",
   "/api/getDefectquantity": "pages/api/getDefectquantity.js",
   "/api/getRetialQuantity": "pages/api/getRetialQuantity.js",
   "/api/mutateSert": "pages/api/mutateSert.js",
   "/api/sync": "pages/api/sync.js",
   "/": "pages/index.html",
   "/giftcards": "pages/giftcards.js",
-  "/addnew": "pages/addnew.js",
   "/api/uploadImg": "pages/api/uploadImg.js",
+  "/addnew": "pages/addnew.js",
   "/404": "pages/404.html"
 }

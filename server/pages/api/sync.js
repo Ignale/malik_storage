@@ -5,23 +5,22 @@ exports.id = 249;
 exports.ids = [249];
 exports.modules = {
 
-/***/ 1824:
-/***/ ((module) => {
-
-module.exports = require("@woocommerce/woocommerce-rest-api");
-
-/***/ }),
-
-/***/ 7320:
+/***/ 6704:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": () => (/* binding */ wc)
-/* harmony export */ });
-const WooCommerceRestApi = __webpack_require__(1824);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "Z": () => (/* binding */ wc)
+});
+
+;// CONCATENATED MODULE: external "@woocommerce/woocommerce-rest-api"
+const woocommerce_rest_api_namespaceObject = require("@woocommerce/woocommerce-rest-api");
+var woocommerce_rest_api_default = /*#__PURE__*/__webpack_require__.n(woocommerce_rest_api_namespaceObject);
+;// CONCATENATED MODULE: ./lib/wc.js
 
 function wc() {
-  const WooCommerce = new WooCommerceRestApi({
+  const WooCommerce = new (woocommerce_rest_api_default())({
     url: 'https://malik-brand.com',
     consumerKey: process.env.WOOCOMMERCE_CONSUMER_KEY,
     consumerSecret: process.env.WOOCOMMERCE_CONSUMER_SECRET,
@@ -39,7 +38,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _lib_wc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7320);
+/* harmony import */ var _lib_wc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6704);
 
 const api = (0,_lib_wc__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)();
 /* harmony default export */ async function __WEBPACK_DEFAULT_EXPORT__(req, res) {
@@ -74,6 +73,11 @@ const api = (0,_lib_wc__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)();
       body: urlencoded
     });
     const message = await retResponse.text();
+    console.log({
+      woo: wooResponse.data,
+      ret: message,
+      def: updatedDefData
+    });
     return res.status(200).json({
       woo: wooResponse.data,
       ret: message,
