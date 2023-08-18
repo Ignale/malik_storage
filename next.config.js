@@ -2,10 +2,9 @@
 
 
 const schedule = require('node-schedule');
-
 const XLSX = require('xlsx')
 const { google } = require('googleapis')
-const client = require('./lib/client')
+const { client } = require('./lib/client')
 const { ALL_PRODUCTS_QUERY } = require('./lib/queries')
 const stream = require('stream')
 
@@ -40,32 +39,34 @@ const uploadToGoogleDrive = async (file, auth) => {
   return response;
 };
 
-schedule.scheduleJob('0 0 * * *', async function () {
+const sendFileToGoogleDrive =
 
-  try {
-    const { data } = await client.client.query({
-      query: ALL_PRODUCTS_QUERY
-    })
+  schedule.scheduleJob('38 13 * * *', async function () {
 
-    const obejctToExport = []
-    data.products.nodes.forEach((product) => product.variations.nodes.forEach((variation) => (obejctToExport.push({ 'Название': variation.name, 'Количество': variation.stockQuantity }))))
+    try {
+      const { data } = await client.query({
+        query: ALL_PRODUCTS_QUERY
+      })
 
-    const workBook = XLSX.utils.book_new(); //creating new book in exel sheet
+      const obejctToExport = []
+      data.products.nodes.forEach((product) => product.variations.nodes.forEach((variation) => (obejctToExport.push({ 'Название': variation.name, 'Количество': variation.stockQuantity }))))
 
-    const workSheet = XLSX.utils.json_to_sheet(obejctToExport) //json_to_sheet method converts array of object to sheet
+      const workBook = XLSX.utils.book_new(); //creating new book in exel sheet
 
-    XLSX.utils.book_append_sheet(workBook, workSheet, `sheet1`);
+      const workSheet = XLSX.utils.json_to_sheet(obejctToExport) //json_to_sheet method converts array of object to sheet
 
-    const buffer = XLSX.write(workBook, { bookType: 'xlsx', type: 'buffer' });
+      XLSX.utils.book_append_sheet(workBook, workSheet, `sheet1`);
 
-    const auth = authenticateGoogle();
-    const response = await uploadToGoogleDrive(buffer, auth)
+      const buffer = XLSX.write(workBook, { bookType: 'xlsx', type: 'buffer' });
 
-  } catch (error) {
-    console.log(error)
+      const auth = authenticateGoogle();
+      const response = await uploadToGoogleDrive(buffer, auth)
 
-  }
-});
+    } catch (error) {
+      console.log(error)
+
+    }
+  });
 
 
 const nextConfig = {
