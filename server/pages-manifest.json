@@ -10,8 +10,8 @@
   "/api/mutateSert": "pages/api/mutateSert.js",
   "/api/sync": "pages/api/sync.js",
   "/": "pages/index.html",
-  "/api/uploadImg": "pages/api/uploadImg.js",
   "/giftcards": "pages/giftcards.js",
   "/addnew": "pages/addnew.js",
+  "/api/uploadImg": "pages/api/uploadImg.js",
   "/404": "pages/404.html"
 }
