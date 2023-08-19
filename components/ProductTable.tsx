@@ -250,8 +250,8 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     console.log(defectTableData)
     console.log(rowData)
     const quantity = defectTableData && defectTableData[defectTableData.findIndex(data => data.databaseId === rowData.databaseId)]?.defectQuantity
-    console.log(quantity)
-    return quantity ?? 0
+    console.log((quantity ?? 0))
+    return (quantity ?? 0)
   }
 
   const defectQuantityEditor = (options: ColumnEditorOptions) => {
