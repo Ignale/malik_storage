@@ -41,6 +41,11 @@ const Allproducts = () => {
   return (
     <Layout>
       <Toast ref={toast} />
+      <button onClick={async function () {
+        const data = await fetch('/api/sendBackup')
+        const response = await data.json()
+        console.log(response)
+      }}></button>
       <Grid container alignItems={'center'} spacing={5}>
         <Grid item xs={12}>
           {loading ? <Sceleton /> : <ProductTable defData={defData} retData={retData} products={data?.products?.nodes} />}
