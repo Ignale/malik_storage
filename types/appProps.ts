@@ -7,6 +7,11 @@ export declare interface AppProps {
   style?: React.CSSProperties; // to pass through style props
   onChange?: React.FormEventHandler<HTMLInputElement>;
 }
+
+export type obejctToExport = {
+  'Название': string,
+  'Количество': number | null
+}[]
 export interface Variation {
   id: Key;
   name: string;
