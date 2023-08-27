@@ -1,6 +1,6 @@
 {
   "crons": [{
     "path": "/api/sendBackup",
-    "schedule": "05 17 * * *"
+    "schedule": "10 17 * * *"
   }]
 }
