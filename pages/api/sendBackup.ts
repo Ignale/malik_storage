@@ -1,23 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import XLSX from 'xlsx'
-import {google} from 'googleapis'
+import getGoogleDrive from '../../googledrive'
 import { GoogleAuth } from 'google-auth-library'
 import {client} from '../../lib/client'
 import {ALL_PRODUCTS_QUERY} from '../../lib/queries'
 import stream from 'stream'
-import { obejctToExport, productWithVariation } from '@/types/appProps'
+import { obejctToExport, productWithVariation, retailProduct } from '@/types/appProps'
 
 
 
 export default async function (req: NextApiRequest,res: NextApiResponse) {
 
-const authenticateGoogle = () => {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: `malikbackups-50592b2b0335.json`,
-    scopes: "https://www.googleapis.com/auth/drive",
-  });
-  return auth;
-}
+  const {driveService, auth} = getGoogleDrive()
 
 const uploadToGoogleDrive = async (file: unknown, auth: GoogleAuth) => {
   let bufferStream = new stream.PassThrough()
@@ -32,7 +26,7 @@ const uploadToGoogleDrive = async (file: unknown, auth: GoogleAuth) => {
     mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     body: bufferStream // you need to put stream here, not just a buffer
   }
-  const driveService = google.drive({ version: "v3", auth });
+  
 
   const response = await driveService.files.create({
     requestBody: fileMetadata,
@@ -42,16 +36,27 @@ const uploadToGoogleDrive = async (file: unknown, auth: GoogleAuth) => {
   return response;
 };
 
-
-
     try {
-      const { data } = await client.query({
-        query: ALL_PRODUCTS_QUERY
+
+      const data = await fetch(`https://malik-brand.retailcrm.ru/api/v5/store/products?` + new URLSearchParams({
+        limit: '100'
+        
+      }), {
+        headers: {
+        "Content-Type": "application/x-www-form-urlencoded", 
+        'X-API-KEY': 'hZTuUun440aC7NSGLUeFaAyjCX0hh8Wp'
+      },
+      method: 'GET', 
+
       })
+      const retailData = await data.json()
+      // const { data } = await client.query({
+      //   query: ALL_PRODUCTS_QUERY
+      // })
 
       const obejctToExport = [] as obejctToExport
 
-      data.products.nodes.forEach((product: productWithVariation) => product.variations.nodes.forEach((variation) => (obejctToExport.push({ 'Название': variation.name, 'Количество': variation.stockQuantity }))))
+      retailData.products.forEach((product: retailProduct) => product.offers.forEach((offer) => (obejctToExport.push({ 'Название': offer.name, 'Количество': offer.quantity }))))
 
       const workBook = XLSX.utils.book_new(); //creating new book in exel sheet
 
@@ -61,7 +66,6 @@ const uploadToGoogleDrive = async (file: unknown, auth: GoogleAuth) => {
 
       const buffer = XLSX.write(workBook, { bookType: 'xlsx', type: 'buffer' });
 
-      const auth = authenticateGoogle();
       const response = await uploadToGoogleDrive(buffer, auth)
       return res.status(200).send(response)
 

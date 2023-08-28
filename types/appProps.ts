@@ -30,6 +30,49 @@ export interface Variation {
   }
 
 }
+
+export interface retailProduct {
+  active: boolean,
+  article: string,
+  description: string,
+  externalId: string,
+  groups: {
+    id: number,
+    externalId: string
+  }[],
+  id: number,
+  manufactorer: string,
+  markable: boolean,
+  maxPrice: number,
+  minPrice: number,
+  name: number,
+  unit: {
+    code: 'pc',
+    name: string,
+    sym: string,
+    vatRate: string
+  }, 
+  quantity: number,
+  updatedAt: Date,
+  url: string,
+  offers: {
+    active: boolean,
+    externalId: string,
+    id: number,
+    images: string[],
+    name: string,
+    price: number,
+    prices: {
+      priceType: string,
+      price: number,
+      ordering: number,
+      currency: 'RUB' 
+    }[],
+    quantity: number
+    
+  }[]
+  
+}
 export interface products {
   products?: {
     nodes: productWithVariation[]
