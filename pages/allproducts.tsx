@@ -26,12 +26,6 @@ const Allproducts = () => {
     toast.current.show({ severity: 'error', summary: 'Ошибка', detail: retError.message, life: 3000 })
   }
   console.log({ data, retData, defData })
-  const click = async () => {
-    console.log('hello')
-    const data = await fetch('/api/sendBackup')
-    const response = await data.json()
-    console.log(response)
-  }
 
   const Sceleton = () => {
     return (
@@ -51,7 +45,7 @@ const Allproducts = () => {
 
       <Grid container alignItems={'center'} spacing={5}>
         <Grid item xs={12}>
-          <button onClick={click}>push me</button>
+
           {loading ? <Sceleton /> : <ProductTable defData={defData} retData={retData} products={data?.products?.nodes} />}
         </Grid>
       </Grid>
