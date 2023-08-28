@@ -63,11 +63,11 @@ const uploadToGoogleDrive = async (file: unknown, auth: GoogleAuth) => {
 
       const auth = authenticateGoogle();
       const response = await uploadToGoogleDrive(buffer, auth)
-      return res.status(200).json(response)
+      return res.status(200).send(response)
 
     } catch (error) {
       console.log(error)
-      return res.status(500).json(error)
+      return res.status(500).send(error)
 
     }
 
