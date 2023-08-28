@@ -44,12 +44,13 @@ const uploadToGoogleDrive = async (file: unknown, auth: GoogleAuth) => {
       }), {
         headers: {
         "Content-Type": "application/x-www-form-urlencoded", 
-        'X-API-KEY': 'hZTuUun440aC7NSGLUeFaAyjCX0hh8Wp'
+        'X-API-KEY': `${process.env.API_KEY}`
       },
       method: 'GET', 
 
       })
       const retailData = await data.json()
+
       // const { data } = await client.query({
       //   query: ALL_PRODUCTS_QUERY
       // })
