@@ -18,6 +18,7 @@ export interface Variation {
   stockQuantity: number | null;
   stockStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | never;
   price: string;
+  sku: string;
   manageStock: string | never;
   databaseId: string;
   metaData: wooMeta[]
@@ -99,6 +100,7 @@ export interface ReatailOffers {
 }
 type Offer ={
   id: number
+  xmlId: string
   externalId: string
   quantity: number
 }

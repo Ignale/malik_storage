@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import wc from '../../lib/wc'
-import { DefData } from '@/types/appProps'
  const api = wc()
 
 export default async function(req: NextApiRequest,res: NextApiResponse) {
@@ -12,10 +11,11 @@ export default async function(req: NextApiRequest,res: NextApiResponse) {
     manage_stock: true,
     stock_quantity: arg.count,
  }
+console.log(arg)
 
   const retailData = JSON.stringify([
     {
-      id: arg.retailId,
+      xmlId: arg.xmlId,
       stores: [
         {
           code: "warehouse",
@@ -46,10 +46,10 @@ export default async function(req: NextApiRequest,res: NextApiResponse) {
     })
     const message = await retResponse.text()
 
-    console.log({woo: wooResponse.data, ret: message, def: updatedDefData})
+    // console.log({woo: wooResponse.data, ret: message, def: updatedDefData})
     return res.status(200).json({woo: wooResponse.data, ret: message, def: updatedDefData})
   } catch (error) {
-    console.log(error)
+    // console.log(error)
     return res.status(500).json(error)
   }
 }

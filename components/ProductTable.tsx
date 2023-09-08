@@ -2,6 +2,7 @@ import { DefData, ReatailOffers, Variation, productWithVariation } from '@/types
 import Image from 'next/image'
 import * as xlsx from 'xlsx'
 import useSWRMutation from 'swr/mutation'
+import useSWR from 'swr'
 import { InputText } from 'primereact/inputtext';
 import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
 import { useRef, useState } from 'react';
@@ -33,6 +34,8 @@ async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
   }
 
 }
+
+const fetcher = (url: string) => fetch(url, {}).then(r => r.json())
 
 async function createProductCRM(url: string, { arg }: { arg: { product: productWithVariation, variation: Variation } }) {
   const requestOptions = {
@@ -99,23 +102,23 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     },
     revalidate: true
   })
-  const { trigger: createTrigger } = useSWRMutation(`/api/createInCRM`, createProductCRM, {
-    onError: (err) => {
-      console.log(err)
-      toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: err.message, life: 3000 })
-    },
-    onSuccess: (data) => {
-      console.log(data)
-      // const retResp = JSON.parse(data)
-      // if (retResp.success && data.woo) {
-      //   toast.current!.show({ severity: 'success', summary: 'Успешно', detail: 'Данные синхронизированы', life: 3000 })
-      // } else {
-      //   console.log(data)
-      //   toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: "Ошибка синхронизации", life: 3000 })
-      // }
-    },
-    revalidate: true
-  })
+  // const { trigger: createTrigger } = useSWRMutation(`/api/createInCRM`, createProductCRM, {
+  //   onError: (err) => {
+  //     console.log(err)
+  //     toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: err.message, life: 3000 })
+  //   },
+  //   onSuccess: (data) => {
+  //     console.log(data)
+  //     // const retResp = JSON.parse(data)
+  //     // if (retResp.success && data.woo) {
+  //     //   toast.current!.show({ severity: 'success', summary: 'Успешно', detail: 'Данные синхронизированы', life: 3000 })
+  //     // } else {
+  //     //   console.log(data)
+  //     //   toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: "Ошибка синхронизации", life: 3000 })
+  //     // }
+  //   },
+  //   revalidate: true
+  // })
 
   const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
 
@@ -136,11 +139,11 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
 
     }
 
-    const retQuantity = retailTableData?.offers.find(offer => offer.externalId == newData.databaseId)?.quantity
+    const retQuantity = retailTableData?.offers.find(offer => offer.xmlId == newData.sku)?.quantity
 
-    const retailCount = retailTableData?.offers.find(offer => offer.externalId == newData.databaseId)
+    const retailCount = retailTableData?.offers.find(offer => offer.xmlId == newData.sku)
 
-    let parentIndex = Object.values(tableProducts!).findIndex((product) => product.variations.nodes.find((variation) => variation.databaseId === e.data.databaseId))
+    let parentIndex = Object.values(tableProducts!).findIndex((product) => product.variations.nodes.find((variation) => variation.sku === e.data.sku))
 
     setTableProducts((prev) => {
       const newProdData = structuredClone(prev!)
@@ -152,25 +155,26 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     setRetailTableData(({ ...prev }) => {
       const newRetailData = { ...prev }
       newRetailData.offers = newRetailData.offers?.map(offer => {
-        if (offer.externalId == newData.databaseId) {
+        if (offer.xmlId == newData.sku) {
           offer.quantity = newData.stockQuantity
         }
         return offer
       })
       return newRetailData
     })
-
+    console.log(newData.sku)
     const args = {
       productId: tableProducts![parentIndex].productId,
       variationId: newData.databaseId,
       count: newData.stockQuantity,
       retailId: retailCount?.id,
+      xmlId: newData.sku,
       defectData: defectTableData
     }
 
-    retQuantity !== undefined ?
-      trigger<OfferToUpdate>(args) :
-      createTrigger<{ product: productWithVariation, variation: OfferToUpdate }>({ product: tableProducts![parentIndex], variation: newData as Variation })
+    // retQuantity !== undefined ?
+    trigger<OfferToUpdate>(args)
+    // createTrigger<{ product: productWithVariation, variation: OfferToUpdate }>({ product: tableProducts![parentIndex], variation: newData as Variation })
   };
 
 
@@ -196,10 +200,38 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     xlsx.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     xlsx.writeFile(workbook, "DataSheet.xlsx");
   }
+  const createSKUs = async () => {
+    const productsIds = new Map
+    for (let product of tableProducts) {
+      for (const variation of product.variations.nodes) {
+        if (!variation.sku) {
+          productsIds.set(product.productId, [...product.variations.nodes.map(node => node.databaseId)])
+        }
+      }
+    }
+    const prJ = Object.fromEntries(productsIds)
+    console.log(prJ)
+    console.log(productsIds)
+    try {
+      const res = await fetch('/api/createAllSku', {
+        method: "POST",
+        body: JSON.stringify(prJ)
+      })
+      if (!res.ok) {
+        throw new Error('somethin went wrong')
+      }
+      const data = await res.json()
+    } catch (error) {
+      console.log(error)
+    }
+
+
+  }
 
   const header = (
     <div className="flex flex-wrap justify-content-end gap-3">
       <Button label="Скачать exel" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
+      <Button label="создать ску" icon="pi pi-upload" className="p-button-help" onClick={createSKUs} />
       <MalikInputText className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText onChange={searchHandler} style={{ width: '100%' }} placeholder="Поиск" />
@@ -277,11 +309,14 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
   }
   const retailQuantityTemplate = (rowData: Variation) => {
 
-    const quantity = retailTableData?.offers.find(offer => offer.externalId == rowData.databaseId)?.quantity
+    const quantity = retailTableData?.offers.find(offer => offer.xmlId == rowData.sku)?.quantity
 
     const value = quantity !== undefined ? quantity : 'Нет в системе'
     return (
       <Tag severity={(quantity !== rowData.stockQuantity && rowData.stockQuantity !== null) ? 'warning' : 'info'} value={value}></Tag>)
+  }
+  const skuTemplate = (rowData: Variation) => {
+    return rowData.sku
   }
 
 
@@ -296,6 +331,8 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
           <Column style={{ width: '15%' }} field="stockQuantity" editor={numberEditor} header="Кол-во в магазине" body={stockQuantityTemplate} sortable></Column>
           <Column style={{ width: '10%' }} field="price" header="Цена" sortable></Column>
           <Column style={{ width: '10%' }} header='Кол-во в CRM' body={retailQuantityTemplate}>
+          </Column>
+          <Column style={{ width: '10%' }} header='SKU' body={skuTemplate}>
           </Column>
           <Column style={{ width: '10%' }} field='defect_quantity' header='Брак' editor={defectQuantityEditor} body={defectTemplate}>
           </Column>
