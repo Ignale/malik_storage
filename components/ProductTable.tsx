@@ -93,8 +93,11 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
       toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: err.message, life: 3000 })
     },
     onSuccess: (data) => {
-      const retResp = JSON.parse(data.ret)
-      if (retResp.success && data.woo) {
+      console.log(data)
+      const retOfResp = JSON.parse(data.ret.offer)
+      const retPrResp = JSON.parse(data.ret.price)
+      console.log({ retOfResp, retPrResp })
+      if (retPrResp.success && retOfResp.success && data.woo) {
         toast.current!.show({ severity: 'success', summary: 'Успешно', detail: 'Данные синхронизированы', life: 3000 })
       } else {
         toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: "Ошибка синхронизации", life: 3000 })
@@ -124,6 +127,8 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
 
     let { newData, index, data } = e
 
+
+
     const defQuantity = defectTableData?.find(data => data.databaseId === newData.databaseId);
     const defQindex = defectTableData?.findIndex(data => data.databaseId === newData.databaseId);
 
@@ -136,7 +141,6 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
 
     } else if (defQuantity && defQuantity.defectQuantity === 0) {// если дефектов нет 
       setDefectTableData((prev) => [...prev!].splice(defQindex!, 1)) // удаляем запись о дефектах
-
     }
 
     const retQuantity = retailTableData?.offers.find(offer => offer.xmlId == newData.sku)?.quantity
@@ -169,6 +173,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
       count: newData.stockQuantity,
       retailId: retailCount?.id,
       xmlId: newData.sku,
+      newPrice: newData.price,
       defectData: defectTableData
     }
 
@@ -315,6 +320,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     return (
       <Tag severity={(quantity !== rowData.stockQuantity && rowData.stockQuantity !== null) ? 'warning' : 'info'} value={value}></Tag>)
   }
+
   const skuTemplate = (rowData: Variation) => {
     return rowData.sku
   }
@@ -329,7 +335,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
           <Column style={{ width: '20%' }} field="name" body={(rowData: Variation) => rowData.name + ` (id: ${rowData.databaseId})`} header="Название" editor={textEditor} sortable></Column>
           <Column style={{ width: '15%' }} field="stockStatus" header="Наличие" sortable body={stockStatusTemplate}></Column>
           <Column style={{ width: '15%' }} field="stockQuantity" editor={numberEditor} header="Кол-во в магазине" body={stockQuantityTemplate} sortable></Column>
-          <Column style={{ width: '10%' }} field="price" header="Цена" sortable></Column>
+          <Column style={{ width: '10%' }} field="price" editor={numberEditor} header="Цена" sortable></Column>
           <Column style={{ width: '10%' }} header='Кол-во в CRM' body={retailQuantityTemplate}>
           </Column>
           <Column style={{ width: '10%' }} header='SKU' body={skuTemplate}>

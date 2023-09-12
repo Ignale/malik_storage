@@ -10,8 +10,22 @@ export default async function(req: NextApiRequest,res: NextApiResponse) {
   const wooData = {
     manage_stock: true,
     stock_quantity: arg.count,
+    regular_price: Number(arg.newPrice).toFixed(0).toString()
  }
-console.log(arg)
+
+
+const retailPrice = JSON.stringify([
+  {
+  id: Number(arg.retailId),
+  xmlId: arg.xmlId,
+  prices: [{
+    code:  'base',
+    price: arg.newPrice, 
+    remove: false
+  }]
+ }
+])
+ console.log(retailPrice)
 
   const retailData = JSON.stringify([
     {
@@ -25,8 +39,10 @@ console.log(arg)
     }
   ]);
 
-  const urlencoded = new URLSearchParams();
-  urlencoded.append("offers", retailData);
+  const urlencodedOffers = new URLSearchParams();
+  const urlencodedPrice = new URLSearchParams();
+  urlencodedOffers.append("offers", retailData);
+  urlencodedPrice.append("prices", retailPrice);
   try{
     const wooResponse = await api.put(`products/${arg.productId}/variations/${arg.variationId}`, wooData)
     
@@ -37,19 +53,28 @@ console.log(arg)
     const updatedDefData = defResponse.json()
     // const wooProduct = await api.get(`products/${arg.productId}/variations/${arg.variationId}`)
 
-    const retResponse = await fetch(`https://malik-brand.retailcrm.ru/api/v5/store/inventories/upload?apiKey=${process.env.API_KEY}`, {
+    const retOffResponse = await fetch(`https://malik-brand.retailcrm.ru/api/v5/store/inventories/upload?apiKey=${process.env.API_KEY}`, {
       method: req.method,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      body: urlencoded
+      body: urlencodedOffers
     })
-    const message = await retResponse.text()
+    const ofMessage = await retOffResponse.text()
 
+    const retPrResponse = await fetch(`https://malik-brand.retailcrm.ru/api/v5/store/prices/upload?apiKey=${process.env.API_KEY}`, {
+      method: req.method,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: urlencodedPrice
+    })
+
+    const prMessage = await retPrResponse.text()
     // console.log({woo: wooResponse.data, ret: message, def: updatedDefData})
-    return res.status(200).json({woo: wooResponse.data, ret: message, def: updatedDefData})
+    return res.status(200).json({woo: wooResponse.data, ret: {offer: ofMessage, price: prMessage}, def: updatedDefData})
   } catch (error) {
-    // console.log(error)
+    console.log(error)
     return res.status(500).json(error)
   }
 }
