@@ -16,7 +16,7 @@ export type obejctToExport = {
 
 
 export type rows = [
-  string, string, number | null
+  string, string, string
 ][]
 export interface Variation {
   id: Key;
