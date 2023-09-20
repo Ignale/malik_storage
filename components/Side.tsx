@@ -60,9 +60,8 @@ const SideBar = styled.div`
 
   ${devices.tablet} {
     position:fixed;
-    bottom: 0;
+    bottom: env(safe-are-inset-bottom);
     z-index: 10;
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
     width: 100vw;
     height: 10vh;
   }

@@ -30,6 +30,8 @@ const Content = styled('div')({
   paddingLeft: '20px',
   [devices.tablet]: {
     width: '100vw',
+    height: 'auto',
+    overflowY: 'initial',
     paddingBottom: '12vh',
   }
 }
