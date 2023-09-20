@@ -59,7 +59,7 @@ const SideBar = styled.div`
   padding-right: 10px;
 
   ${devices.tablet} {
-    position:absolute;
+    position:fixed;
     bottom: 0;
     z-index: 10;
     padding-bottom: calc(1rem + env(safe-area-inset-bottom));

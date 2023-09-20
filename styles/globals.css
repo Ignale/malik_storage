@@ -24,7 +24,7 @@ body {
 
 @media screen and (max-width: 768px) {
   body {
-    padding-bottom: calc(10vh + 1rem + env(safe-are-inset-bottom));
+    padding-bottom: env(safe-are-inset-bottom);
   }
 }
 
