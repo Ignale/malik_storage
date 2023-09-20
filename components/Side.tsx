@@ -60,6 +60,7 @@ const SideBar = styled.div({
 
   [devices.tablet]: {
     position: 'sticky',
+    bottom: 0,
     zIndex: 10,
     paddingTop: '1rem',
     paddingBottom: 'calc(1rem+env(safe-area-inset-bottom))',
