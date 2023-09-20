@@ -64,7 +64,7 @@ export async function getStaticProps() {
       props: {
         categories: categories.productCategories.nodes,
         attributes: {
-          pa_cvet: all_cvet.allPaCvet.nodes,
+          pa_cvet: all_cvet.allPaColor.nodes,
           pa_size: all_size.allPaSize.nodes
         },
       },
