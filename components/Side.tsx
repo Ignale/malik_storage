@@ -47,27 +47,26 @@ const Side = () => {
 export default Side;
 
 
-const SideBar = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  minWidth: '300px',
-  width: '20vw',
-  height: '100vh',
-  backgroundColor: '#3b3a48',
-  alignItems: 'center',
-  paddingLeft: '10px',
-  paddingRight: '10px',
+const SideBar = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+   width: 20vw;
+   height: 100vw;
+   background-color: #3b3a48;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
 
-  [devices.tablet]: {
-    position: 'absolute',
-    bottom: 0,
-    zIndex: 10,
-    paddingTop: '1rem',
-    paddingBottom: 'calc(1rem+env(safe-area-inset-bottom))',
-    width: '100vw',
-    height: '10vh',
+  ${devices.tablet} {
+    position:absolute;
+    bottom: 0;
+    z-index: 10;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    width: 100vw;
+    height: 10vh;
   }
-})
+`
 
 const LogoWrapper = styled.div({
   flexBasis: '10vh',
