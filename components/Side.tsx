@@ -59,10 +59,10 @@ const SideBar = styled.div({
   paddingRight: '10px',
 
   [devices.tablet]: {
-    position: 'absolute',
+    position: 'sticky',
     zIndex: 10,
-    bottom: '0',
-    left: '0',
+    paddingTop: '1rem',
+    paddingBottom: 'calc(1rem+env(safe-area-inset-bottom))',
     width: '100vw',
     height: '10vh',
   }

@@ -50,14 +50,12 @@ const uploadToGoogleDrive = async (file: unknown, auth: GoogleAuth) => {
 
       })
       const retailData = await data.json()
-
-      // const { data } = await client.query({
-      //   query: ALL_PRODUCTS_QUERY
-      // })
+      
+      console.log(retailData)
 
       const obejctToExport = [] as obejctToExport
 
-      retailData.products.forEach((product: retailProduct) => product.offers.forEach((offer) => (obejctToExport.push({ 'Название': offer.name, 'Количество': offer.quantity }))))
+      retailData.products.forEach((product: retailProduct) => product.offers.forEach((offer) => (obejctToExport.push({ 'Название': offer.name, "Артикул": offer.xmlId, 'Количество в CRM': offer.quantity }))))
 
       const workBook = XLSX.utils.book_new(); //creating new book in exel sheet
 

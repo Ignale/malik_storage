@@ -10,8 +10,14 @@ export declare interface AppProps {
 
 export type obejctToExport = {
   'Название': string,
-  'Количество': number | null
+  'Артикул': string,
+  'Количество в CRM': number | null
 }[]
+
+
+export type rows = [
+  string, string, number | null
+][]
 export interface Variation {
   id: Key;
   name: string;
@@ -59,6 +65,7 @@ export interface retailProduct {
   offers: {
     active: boolean,
     externalId: string,
+    xmlId: string,
     id: number,
     images: string[],
     name: string,

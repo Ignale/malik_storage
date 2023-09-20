@@ -198,7 +198,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
 
   const exportCSV = () => {
     const obejctToExport = [] as any
-    tableProducts.forEach((product) => product.variations.nodes.forEach((variation) => (obejctToExport.push({ 'Название': variation.name, 'Количество': variation.stockQuantity }))))
+    tableProducts.forEach((product) => product.variations.nodes.forEach((variation) => (obejctToExport.push({ 'Название': variation.name, 'Артикул': variation.sku, 'Количество в CRM': variation.stockQuantity }))))
     console.log(obejctToExport)
     const worksheet = xlsx.utils.json_to_sheet(obejctToExport);
     const workbook = xlsx.utils.book_new();
@@ -229,14 +229,39 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     } catch (error) {
       console.log(error)
     }
+  }
+  const uploadToGoogle = async () => {
+    try {
+      const res = await fetch('/api/uploadToApiSheets')
+      if (!res.ok) {
+        throw new Error('error')
+      }
+      const data = await res.json()
+      if (data.success) {
+        toast.current!.show({ severity: 'success', summary: 'Успешно', detail: data.message, life: 3000 })
+      }
+    } catch (error) {
+      console.log(error)
+      toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: 'Error', life: 3000 })
+    }
+  }
 
-
+  const lookTable = async () => {
+    try {
+      const res = await fetch('/api/feedFromSheet')
+      const data = await res.json()
+      console.log(data)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const header = (
     <div className="flex flex-wrap justify-content-end gap-3">
       <Button label="Скачать exel" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
       <Button label="создать ску" icon="pi pi-upload" className="p-button-help" onClick={createSKUs} />
+      <Button label="Выгрузить данные в таблицу" icon="pi pi-upload" className="p-button-help" onClick={uploadToGoogle} />
+      <Button label="look table" icon="pi pi-upload" className="p-button-help" onClick={lookTable} />
       <MalikInputText className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText onChange={searchHandler} style={{ width: '100%' }} placeholder="Поиск" />
