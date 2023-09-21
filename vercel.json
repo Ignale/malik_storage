@@ -1,9 +1,3 @@
 {
-  "crons": [{
-    "path": "/api/uploadToApiSheets",
-    "schedule": "0 8 * * *"
-  },{
-    "path": "/api/feedFromSheet",
-    "schedule": "59 23 * * *"
-  }]
+  "crons": []
 }
