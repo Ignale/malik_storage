@@ -14,10 +14,10 @@ export type obejctToExport = {
   'Количество в CRM': number | null
 }[]
 
-
-export type rows = [
-  string, string, string
-][]
+export type row = [
+  string, string, string, string
+]
+export type rows = row[]
 export interface Variation {
   id: Key;
   name: string;

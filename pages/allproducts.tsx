@@ -1,4 +1,4 @@
-
+import { useEffect } from 'react'
 import Layout from '@/components/Layout'
 import { ALL_PRODUCTS_QUERY } from '../lib/queries'
 import { ReatailOffers, DefData } from '../types/appProps'
@@ -13,8 +13,25 @@ import useSWR from 'swr'
 const fetcher = (url: string) => fetch(url, {}).then(r => r.json())
 
 const Allproducts = () => {
+
   const toast = useRef<Toast>(null);
   const { loading, data } = useQuery(ALL_PRODUCTS_QUERY, { variables: { first: 100 } })
+
+  useEffect(() => {
+    console.log(data?.products?.nodes)
+    const write = async () => {
+      const writeFile = await fetch('/api/saveLocal', {
+        method: 'POST',
+        body: JSON.stringify(data?.products?.nodes)
+      })
+      const dataWr = await writeFile.json()
+      console.log(dataWr)
+    }
+    write()
+
+  }, [loading])
+
+
   const { data: retData, error: retError } = useSWR<ReatailOffers>('/api/getRetialQuantity', fetcher, {
     refreshInterval: 1000
   })
@@ -26,7 +43,6 @@ const Allproducts = () => {
     toast.current.show({ severity: 'error', summary: 'Ошибка', detail: retError.message, life: 3000 })
   }
   console.log({ data, retData, defData })
-
   const Sceleton = () => {
     return (
       <>

@@ -2,8 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import XLSX from 'xlsx'
 import getGoogleDrive from '../../googledrive'
 import { GoogleAuth } from 'google-auth-library'
-import {client} from '../../lib/client'
-import {ALL_PRODUCTS_QUERY} from '../../lib/queries'
 import stream from 'stream'
 import { obejctToExport, productWithVariation, retailProduct } from '@/types/appProps'
 
