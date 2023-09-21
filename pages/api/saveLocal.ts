@@ -1,9 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import fs from 'fs'
-import {client} from '../../lib/client'
-import { WooProductVariation, productWithVariation } from '@/types/appProps'
-
-
+import { productWithVariation } from '@/types/appProps'
 
 export default async function (req: NextApiRequest,res: NextApiResponse) {
   const products = JSON.parse(req.body) as productWithVariation[]
