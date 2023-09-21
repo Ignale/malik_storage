@@ -15,7 +15,7 @@ export type obejctToExport = {
 }[]
 
 export type row = [
-  string, string, string, string
+  string, string, string, string?
 ]
 export type rows = row[]
 export interface Variation {
