@@ -25,7 +25,7 @@ const retailPrice = JSON.stringify([
   }]
  }
 ])
- console.log(retailPrice)
+//  console.log(retailPrice)
 
   const retailData = JSON.stringify([
     {
@@ -45,13 +45,14 @@ const retailPrice = JSON.stringify([
   urlencodedPrice.append("prices", retailPrice);
   try{
     const wooResponse = await api.put(`products/${arg.productId}/variations/${arg.variationId}`, wooData)
+
+    
     
     const defResponse = await fetch('https://malik-storage-default-rtdb.firebaseio.com/defects/.json', {
       method: 'PUT',
       body: JSON.stringify(arg.defectData)
     })
     const updatedDefData = defResponse.json()
-    // const wooProduct = await api.get(`products/${arg.productId}/variations/${arg.variationId}`)
 
     const retOffResponse = await fetch(`https://malik-brand.retailcrm.ru/api/v5/store/inventories/upload?apiKey=${process.env.API_KEY}`, {
       method: req.method,
@@ -72,7 +73,22 @@ const retailPrice = JSON.stringify([
 
     const prMessage = await retPrResponse.text()
     // console.log({woo: wooResponse.data, ret: message, def: updatedDefData})
-    return res.status(200).json({woo: wooResponse.data, ret: {offer: ofMessage, price: prMessage}, def: updatedDefData})
+    
+    const apiSheetResponse = await fetch('https://api.apispreadsheets.com/data/cb6Zu2tx0RCF9XBY/', {
+      method: 'POST',
+      body: JSON.stringify({
+       data: {"Артикул":arg.xmlId,"Количество в CRM":`${arg.count}`}, query: `select*fromcb6Zu2tx0RCF9XBYwhereАртикул='${arg.xmlId}'`
+      })
+    })
+    if(!apiSheetResponse.ok){
+      console.log(apiSheetResponse.status)
+      throw new Error('error updating sheet data')
+    }
+
+    const resultSheetUpdate = await apiSheetResponse.text()
+    
+    console.log(resultSheetUpdate)
+    return res.status(200).json({woo: wooResponse.data, ret: {offer: ofMessage, price: prMessage}, def: updatedDefData, sheetData: resultSheetUpdate})
   } catch (error) {
     console.log(error)
     return res.status(500).json(error)

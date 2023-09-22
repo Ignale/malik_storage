@@ -50,9 +50,9 @@ export default async function (req: NextApiRequest,res: NextApiResponse) {
           requests: [
           {updateCells: {
             rows: sheetObject.map(row=>({
-              values: row.map(value => ({
-              userEnteredValue: {stringValue: value}
-              }))
+              values: row.map((value,index, arr) => 
+              index === 2 ? {userEnteredValue: {numberValue: Number(value)}} : {userEnteredValue: {stringValue: value}}
+                )
             })), 
             fields: '*',
             start: {sheetId: 543683652, rowIndex: 1, columnIndex: 0},

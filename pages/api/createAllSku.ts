@@ -26,7 +26,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   }
 
   for(const productId in allProductsIds) {
-    const data = createSKU(Number(productId), allProductsIds[productId])
+    const data = await createSKU(Number(productId), allProductsIds[productId])
     // console.log(data)
   }
   

@@ -27,7 +27,9 @@ const Allproducts = () => {
       const dataWr = await writeFile.json()
       console.log(dataWr)
     }
-    write()
+    if (data?.products?.nodes) {
+      write()
+    }
 
   }, [loading])
 

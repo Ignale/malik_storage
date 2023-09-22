@@ -52,7 +52,7 @@ const SideBar = styled.div`
   flex-direction: column;
   min-width: 300px;
    width: 20vw;
-   height: 100vw;
+   height: 100vh;
    background-color: #3b3a48;
   align-items: center;
   padding-left: 10px;
