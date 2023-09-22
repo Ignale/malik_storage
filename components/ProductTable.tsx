@@ -259,9 +259,9 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
   const header = (
     <div className="flex flex-wrap justify-content-end gap-3">
       <Button label="Скачать exel" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
-      <Button label="создать ску" icon="pi pi-upload" className="p-button-help" onClick={createSKUs} />
+      {/* <Button label="создать ску" icon="pi pi-upload" className="p-button-help" onClick={createSKUs} />
       <Button label="Выгрузить данные в таблицу" icon="pi pi-upload" className="p-button-help" onClick={uploadToGoogle} />
-      <Button label="look table" icon="pi pi-upload" className="p-button-help" onClick={lookTable} />
+      <Button label="look table" icon="pi pi-upload" className="p-button-help" onClick={lookTable} /> */}
       <MalikInputText className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText onChange={searchHandler} style={{ width: '100%' }} placeholder="Поиск" />
