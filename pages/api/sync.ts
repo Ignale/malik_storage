@@ -27,6 +27,7 @@ const retailPrice = JSON.stringify([
 ])
 //  console.log(retailPrice)
 
+
   const retailData = JSON.stringify([
     {
       xmlId: arg.xmlId,
@@ -53,6 +54,15 @@ const retailPrice = JSON.stringify([
       body: JSON.stringify(arg.defectData)
     })
     const updatedDefData = defResponse.json()
+
+    const histroyResponse = await fetch(`https://malik-storage-default-rtdb.firebaseio.com/history/${arg.history.sku}.json`, 
+    {
+      method: 'POST', 
+      body: JSON.stringify(arg.history)
+    })
+
+
+    const updatedHistData = histroyResponse.json()
 
     const retOffResponse = await fetch(`https://malik-brand.retailcrm.ru/api/v5/store/inventories/upload?apiKey=${process.env.API_KEY}`, {
       method: req.method,
@@ -81,16 +91,17 @@ const retailPrice = JSON.stringify([
       })
     })
     if(!apiSheetResponse.ok){
-      console.log(apiSheetResponse.status)
+      // console.log(apiSheetResponse.status)
       throw new Error('error updating sheet data')
     }
 
     const resultSheetUpdate = await apiSheetResponse.text()
     
-    console.log(resultSheetUpdate)
-    return res.status(200).json({woo: wooResponse.data, ret: {offer: ofMessage, price: prMessage}, def: updatedDefData, sheetData: resultSheetUpdate})
+    return res.status(200).json({woo: wooResponse.data, ret: {offer: ofMessage, price: prMessage}, def: updatedDefData, 
+      sheetData: resultSheetUpdate, 
+      history: updatedHistData} )
   } catch (error) {
-    console.log(error)
+
     return res.status(500).json(error)
   }
 }

@@ -23,9 +23,28 @@ export default async function (req: NextApiRequest,res: NextApiResponse) {
       })
       const retailData = await data.json()
 
+      let retProduct = retailData.products
+
+      if(retailData.pagination.totalPageCount > 1) {
+        const data = await fetch(`https://malik-brand.retailcrm.ru/api/v5/store/products?` + new URLSearchParams({
+        limit: '100',
+        page: '2'
+      }), {
+        headers: {
+        "Content-Type": "application/x-www-form-urlencoded", 
+        'X-API-KEY': `${process.env.API_KEY}`
+      },
+      method: 'GET', 
+
+      })
+      const retailData = await data.json()
+      const mergedList = retProduct.concat(retailData.products)
+      retProduct = mergedList
+      }
+
       const sheetObject = [] as rows
 
-      retailData.products.forEach((product: retailProduct) => product.offers.forEach((offer) =>{
+      retProduct.forEach((product: retailProduct) => product.offers.forEach((offer) =>{
         if(offer.name == '12') {
           return
         }

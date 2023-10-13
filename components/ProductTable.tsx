@@ -2,13 +2,12 @@ import { DefData, ReatailOffers, Variation, productWithVariation } from '@/types
 import Image from 'next/image'
 import * as xlsx from 'xlsx'
 import useSWRMutation from 'swr/mutation'
-import useSWR from 'swr'
 import { InputText } from 'primereact/inputtext';
 import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
 import { useRef, useState } from 'react';
-import { Toolbar } from 'primereact/toolbar';
 import imgPlaceholder from '../public/img/placeholder-800x800.png'
-import { DataTable, DataTableRowToggleEvent, DataTableExpandedRows, DataTableRowEditCompleteEvent } from 'primereact/datatable';
+import { actHistory, actObj } from '@/types/authTypes';
+import { DataTable, DataTableRowToggleEvent, DataTableExpandedRows, DataTableRowEditCompleteEvent, DataTableValue } from 'primereact/datatable';
 import { ColumnEditorOptions } from 'primereact/column';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -17,6 +16,8 @@ import { Toast } from 'primereact/toast';
 import { OfferToUpdate } from '@/types/appProps';
 import styled from '@emotion/styled';
 import { devices } from '@/lib/mediaQueries';
+import { getUser } from '@/session/SessionProvider'
+import moreButtonTemplate from './tableTemplates/moreButtonTemplate';
 
 async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
   const requestOptions = {
@@ -35,7 +36,7 @@ async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
 
 }
 
-const fetcher = (url: string) => fetch(url, {}).then(r => r.json())
+
 
 async function createProductCRM(url: string, { arg }: { arg: { product: productWithVariation, variation: Variation } }) {
   const requestOptions = {
@@ -49,7 +50,7 @@ async function createProductCRM(url: string, { arg }: { arg: { product: productW
     }
   } catch (err) {
     console.log(err)
-    throw err
+    return err
   }
 
 }
@@ -61,9 +62,12 @@ type ProductTableProps = {
 }
 
 export default function ProductTable({ products, retData, defData }: ProductTableProps) {
+
   const toast = useRef<Toast>(null);
 
   const [globalFilter, setGlobalFilter] = useState('')
+
+  const [history, setHistory] = useState<actHistory[] | null>(null)
 
   const [tableProducts, setTableProducts] = useState<productWithVariation[] | []>(() => [...products!])
 
@@ -72,6 +76,8 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
   const [defectTableData, setDefectTableData] = useState<DefData[] | undefined>(() => defData)
 
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[]>([]);
+
+  const { user } = getUser()
 
   const expandAll = () => {
     let _expandedRows: {
@@ -105,6 +111,8 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     },
     revalidate: true
   })
+
+
   // const { trigger: createTrigger } = useSWRMutation(`/api/createInCRM`, createProductCRM, {
   //   onError: (err) => {
   //     console.log(err)
@@ -126,8 +134,6 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
   const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
 
     let { newData, index, data } = e
-
-
 
     const defQuantity = defectTableData?.find(data => data.databaseId === newData.databaseId);
     const defQindex = defectTableData?.findIndex(data => data.databaseId === newData.databaseId);
@@ -166,7 +172,26 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
       })
       return newRetailData
     })
-    console.log(newData.sku)
+
+    const createActionArr = (prevData: DataTableValue, newData: DataTableValue) => {
+      console.log({ prevData, newData })
+      const actionArr = [] as actObj[]
+      const keys = ['price', 'stockQuantity']
+      keys.forEach(key => {
+        let actObj = {} as actObj
+        if (newData[key] !== prevData[key]) {
+          actObj.objName = key
+          actObj.prevValue = prevData[key]
+          actObj.newValue = newData[key]
+          actionArr.push(actObj)
+        }
+      })
+      return actionArr
+    }
+    const actionArr = createActionArr(data, newData)
+
+    console.log(actionArr)
+
     const args = {
       productId: tableProducts![parentIndex].productId,
       variationId: newData.databaseId,
@@ -174,7 +199,18 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
       retailId: retailCount?.id,
       xmlId: newData.sku,
       newPrice: newData.price,
-      defectData: defectTableData
+      defectData: defectTableData,
+      history: {
+        actionDate: new Date().toLocaleDateString('ru-RU', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+        }),
+        actionArr,
+        actionType: 'change',
+        sku: newData.sku,
+        changeMaker: user,
+      } as actHistory
     }
 
     // retQuantity !== undefined ?
@@ -182,10 +218,6 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     // createTrigger<{ product: productWithVariation, variation: OfferToUpdate }>({ product: tableProducts![parentIndex], variation: newData as Variation })
   };
 
-
-  const textEditor = (options: ColumnEditorOptions) => {
-    return <InputText type="text" value={options.value} style={{ width: '100%' }} onChange={(e) => options.editorCallback?.(e.target.value)} />;
-  };
 
   const numberEditor = (options: ColumnEditorOptions) => {
     return <InputNumber value={options.value} size={5} onValueChange={(e) => options.editorCallback?.(e.value)} />;
@@ -226,6 +258,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
         throw new Error('somethin went wrong')
       }
       const data = await res.json()
+      toast.current!.show({ severity: 'success', summary: 'Успешно', detail: data.message, life: 3000 })
     } catch (error) {
       console.log(error)
     }
@@ -258,10 +291,12 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
 
   const header = (
     <div className="flex flex-wrap justify-content-end gap-3">
-      <Button label="Скачать exel" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
-      {/* <Button label="создать ску" icon="pi pi-upload" className="p-button-help" onClick={createSKUs} />
-      <Button label="Выгрузить данные в таблицу" icon="pi pi-upload" className="p-button-help" onClick={uploadToGoogle} />
-      <Button label="look table" icon="pi pi-upload" className="p-button-help" onClick={lookTable} /> */}
+      <Button label="Скачать exel" icon="pi pi-file-excel" className="p-button-help" onClick={exportCSV} />
+      {user?.role === 'admin' && <>
+        <Button label="Cоздать SKU" icon="pi pi-file-edit" className="p-button-help" onClick={createSKUs} />
+        <Button label="Выгрузить данные в таблицу" icon="pi pi-upload" className="p-button-help" onClick={uploadToGoogle} />
+        <Button label="Синхронизировать с exel" icon="pi pi-sync" className="p-button-help" onClick={lookTable} />
+      </>}
       <MalikInputText className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText onChange={searchHandler} style={{ width: '100%' }} placeholder="Поиск" />
@@ -337,6 +372,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     }
     return <InputNumber size={1} onChange={editHandler} />
   }
+
   const retailQuantityTemplate = (rowData: Variation) => {
 
     const quantity = retailTableData?.offers.find(offer => offer.xmlId == rowData.sku)?.quantity
@@ -357,17 +393,22 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
         <h4 className='mb-4'>Вариации для {data.name}</h4>
         <DataTable dataKey='id' editMode='row' onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }} value={data.variations.nodes}>
           <Column style={{ width: '10%' }} field="featuredImage" header="Изображение" body={imageBodyTemplate}></Column>
-          <Column style={{ width: '20%' }} field="name" body={(rowData: Variation) => rowData.name + ` (id: ${rowData.databaseId})`} header="Название" editor={textEditor} sortable></Column>
+          <Column style={{ width: '20%' }} field="name" body={(rowData: Variation) => rowData.name + ` (id: ${rowData.databaseId})`} header="Название" sortable></Column>
           <Column style={{ width: '15%' }} field="stockStatus" header="Наличие" sortable body={stockStatusTemplate}></Column>
-          <Column style={{ width: '15%' }} field="stockQuantity" editor={numberEditor} header="Кол-во в магазине" body={stockQuantityTemplate} sortable></Column>
-          <Column style={{ width: '10%' }} field="price" editor={numberEditor} header="Цена" sortable></Column>
+          <Column style={{ width: '15%' }} field="stockQuantity" editor={user?.role === 'admin' ? numberEditor : false} header="Кол-во в магазине" body={stockQuantityTemplate} sortable></Column>
+          <Column style={{ width: '10%' }} field="price" editor={(user?.role === 'admin' || 'manager') ? numberEditor : false} header="Цена" sortable></Column>
           <Column style={{ width: '10%' }} header='Кол-во в CRM' body={retailQuantityTemplate}>
           </Column>
           <Column style={{ width: '10%' }} header='SKU' body={skuTemplate}>
           </Column>
-          <Column style={{ width: '10%' }} field='defect_quantity' header='Брак' editor={defectQuantityEditor} body={defectTemplate}>
+          <Column style={{ width: '10%' }} field='defect_quantity' header='Брак' editor={user?.role === 'admin' ? defectQuantityEditor : false} body={defectTemplate}>
           </Column>
-          <Column style={{ width: '10%' }} rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+          {user && user?.role !== 'user' &&
+            <Column style={{ width: '10%' }} rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>}
+          {user && user?.role !== 'user' &&
+            <Column style={{ width: '10%' }} headerStyle={{ width: '10%', minWidth: '8rem' }} body={moreButtonTemplate} >
+            </Column>}
+
         </DataTable>
       </div>
     )

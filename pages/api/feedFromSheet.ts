@@ -21,6 +21,7 @@ export default async function (req: NextApiRequest,res: NextApiResponse) {
 
    const api = wc()
   const dataSheet = await fetch('https://api.apispreadsheets.com/data/cb6Zu2tx0RCF9XBY/?dataFormat=matrix')
+  
   const data = await dataSheet.json()
 
   const productsToChange =[] as rows

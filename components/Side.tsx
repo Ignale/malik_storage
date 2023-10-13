@@ -5,14 +5,21 @@ import logo from '../public/img/logo_black.png'
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import AddBusinessIcon from '@mui/icons-material/AddBusiness';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
 import { devices } from '../lib/mediaQueries'
 import { useRouter } from "next/router";
+import { Button } from "@mui/material";
+import { signOut } from "firebase/auth";
+import { users } from "@/fireBaseConfig";
+import { getUser } from "@/session/SessionProvider";
 
 type pathProps = {
-  path: boolean
+  path?: boolean
 }
 const Side = () => {
   const { pathname } = useRouter()
+  const { user } = getUser()
   return (
     <SideBar>
       <LogoWrapper>
@@ -27,25 +34,47 @@ const Side = () => {
             Все товары
           </Link>
         </MenuItem>
-        <MenuItem path={pathname === '/addnew' ? true : false}>
-          <Link href='/addnew'>
-            <AddBusinessIcon />
-            Добавить новый
-          </Link>
-        </MenuItem>
-        <MenuItem path={pathname === '/giftcards' ? true : false}>
-          <Link href='/giftcards'>
-            <CardGiftcardIcon />
-            Подарочные карты
-          </Link>
-        </MenuItem>
+        {user && <>
+          <MenuItem path={pathname === '/addnew' ? true : false}>
+            <Link href='/addnew'>
+              <AddBusinessIcon />
+              Добавить новый
+            </Link>
+          </MenuItem>
+          <MenuItem path={pathname === '/giftcards' ? true : false}>
+            <Link href='/giftcards'>
+              <CardGiftcardIcon />
+              Подарочные карты
+            </Link>
+          </MenuItem>
+        </>}
+
+
       </Menu>
+      <SubMenu>
+        {user && <MenuItem  >
+          <Link onClick={(e) => { e.preventDefault(); signOut(users) }} href="#">
+            <LogoutIcon />
+            Выйти
+          </Link>
+        </MenuItem>}
+        {!user &&
+          <MenuItem path={pathname === '/auth' ? true : false}>
+            <Link href='/auth'>
+              <LoginIcon />
+              Войти
+            </Link>
+          </MenuItem>}
+      </SubMenu>
     </SideBar>
   )
 }
 
 export default Side;
 
+const SubMenu = styled.div`
+  width: '100%',
+`
 
 const SideBar = styled.div`
   display: flex;

@@ -35,10 +35,10 @@ const Allproducts = () => {
 
 
   const { data: retData, error: retError } = useSWR<ReatailOffers>('/api/getRetialQuantity', fetcher, {
-    refreshInterval: 1000
+    refreshInterval: 100000
   })
   const { data: defData, error: defError } = useSWR<DefData[]>('/api/getDefectquantity', fetcher, {
-    refreshInterval: 1000
+    refreshInterval: 100000
   })
 
   if (retError && toast.current !== null) {
