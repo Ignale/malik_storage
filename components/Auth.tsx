@@ -19,9 +19,6 @@ function Auth() {
     setIsLoginForm(prev => !prev)
   }
 
-  const toast = useRef(null);
-
-
   const formik = useFormik({
     initialValues: {
       firstName: '',
@@ -42,14 +39,10 @@ function Auth() {
       &nbsp;
     </small>;
   };
-
-
   return (
-
     <div className="flex justify-content-center">
       <Card minWidth="400px" padding="30px">
         <form onSubmit={formik.handleSubmit} className="flex flex-column gap-3 justify-content-center w-full">
-          <Toast ref={toast} />
           {!isLoginForm && <>
             <span className="p-float-label ">
               <InputText
