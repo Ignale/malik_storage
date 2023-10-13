@@ -3,15 +3,15 @@ import XLSX from 'xlsx'
 import getGoogleDrive from '../../googledrive'
 import { GoogleAuth } from 'google-auth-library'
 import stream from 'stream'
-import { obejctToExport, productWithVariation, retailProduct } from '@/types/appProps'
+import { obejctToExport, retailProduct } from '@/types/appProps'
 
 
 
 export default async function (req: NextApiRequest,res: NextApiResponse) {
 
-  const {driveService, auth} = getGoogleDrive()
+  const {driveService} = getGoogleDrive()
 
-const uploadToGoogleDrive = async (file: unknown, auth: GoogleAuth) => {
+const uploadToGoogleDrive = async (file: Buffer) => {
   let bufferStream = new stream.PassThrough()
   bufferStream.end(file)
   const fileMetadata = {
@@ -25,7 +25,6 @@ const uploadToGoogleDrive = async (file: unknown, auth: GoogleAuth) => {
     body: bufferStream // you need to put stream here, not just a buffer
   }
   
-
   const response = await driveService.files.create({
     requestBody: fileMetadata,
     media: media,
@@ -63,7 +62,8 @@ const uploadToGoogleDrive = async (file: unknown, auth: GoogleAuth) => {
 
       const buffer = XLSX.write(workBook, { bookType: 'xlsx', type: 'buffer' });
 
-      const response = await uploadToGoogleDrive(buffer, auth)
+      const response = await uploadToGoogleDrive(buffer)
+
       return res.status(200).send(response)
 
     } catch (error) {
