@@ -16,7 +16,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     if(userSnapshot.val()){
       const userData = userSnapshot.val()
       const user: user = {
-        isAuth: true,
         role: 'user',
         uid: userCredentials.user.uid,
         email: userData.email,

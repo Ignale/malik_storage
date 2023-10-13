@@ -86,7 +86,7 @@ function Auth() {
               <label htmlFor="email">e-mail</label>
             </span>
             {getFormErrorMessage('email')}
-            <span className="p-float-label w-full">
+            <span className="p-float-label ">
               <Password
                 id="password"
                 name="password"
@@ -103,11 +103,11 @@ function Auth() {
               />
               <label htmlFor="password">Пароль</label>
             </span>
+
+
             {getFormErrorMessage('password')}
             {(error && formik.touched) && <Message severity="error" text={error} />}
           </>
-
-
           <Button type="submit" label="Отправить" loading={loading} />
           {isLoginForm ? <p>Нет учетной записи? <a onClick={changeLogin} className="cursor-pointer">Зарегестрироваться</a></p> : <p>Уже есть учетная запись? <a className="cursor-pointer" onClick={changeLogin}>Войти</a></p>}
 
