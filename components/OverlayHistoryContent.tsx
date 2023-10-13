@@ -24,7 +24,6 @@ function OverlayHistoryContent({ history }: overlayProps) {
           Значение <span>{action.objName === 'stockQuantity' ? 'Количество' : 'Цена'}</span> было изменено с <span>{action.prevValue}</span> на
           <span> {action.newValue}</span>
         </OverLayAction>))}
-
       </OverLayChange>
     </OverLayWrapper>
   )

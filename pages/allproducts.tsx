@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import Layout from '@/components/Layout'
+import Layout from '../components/Layout'
 import { ALL_PRODUCTS_QUERY } from '../lib/queries'
 import { ReatailOffers, DefData } from '../types/appProps'
 import { Grid } from '@mui/material'

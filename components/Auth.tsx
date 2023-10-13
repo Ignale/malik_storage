@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import { useFormik } from "formik"
 import { Message } from 'primereact/message';
 import { InputText } from "primereact/inputtext";
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
-import { Toast } from 'primereact/toast';
 import { classNames } from 'primereact/utils';
 import Card from "./Card";
 import useUserApi from '../lib/hooks/useUserApi'
@@ -84,7 +83,7 @@ function Auth() {
               }}
               className={classNames({ 'p-invalid': isFormFieldInvalid('firstName') }, 'w-full')}
             />
-            <label htmlFor="input_name">e-mail</label>
+            <label htmlFor="email">e-mail</label>
           </span>
           {getFormErrorMessage('email')}
           <span className="p-float-label w-full">
@@ -102,7 +101,7 @@ function Auth() {
               }}
               className={classNames({ 'p-invalid': isFormFieldInvalid('firstName') }, 'w-full')}
             />
-            <label htmlFor="input_password">Пароль</label>
+            <label htmlFor="password">Пароль</label>
           </span>
           {getFormErrorMessage('password')}
           {(error && formik.touched) && <Message severity="error" text={error} />}

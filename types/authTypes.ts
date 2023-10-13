@@ -1,7 +1,7 @@
 
 export type actObj = {
   objName: string,
-    prevValuse?: string | number,
+    prevValue?: string | number,
     newValue?: string | number,
 }
 export type actHistory = {
