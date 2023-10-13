@@ -72,39 +72,41 @@ function Auth() {
             </span>
             {getFormErrorMessage('secondName')}
           </>}
+          <>
+            <span className="p-float-label ">
+              <InputText
+                id="email"
+                name="email"
+                value={formik.values.email}
+                onChange={(e) => {
+                  formik.setFieldValue('email', e.target.value);
+                }}
+                className={classNames({ 'p-invalid': isFormFieldInvalid('firstName') }, 'w-full')}
+              />
+              <label htmlFor="email">e-mail</label>
+            </span>
+            {getFormErrorMessage('email')}
+            <span className="p-float-label w-full">
+              <Password
+                id="password"
+                name="password"
+                value={formik.values.password}
+                toggleMask
+                inputStyle={{ width: '100%' }}
+                weakLabel="Простой"
+                mediumLabel="Средний"
+                strongLabel="Сложный"
+                onChange={(e) => {
+                  formik.setFieldValue('password', e.target.value);
+                }}
+                className={classNames({ 'p-invalid': isFormFieldInvalid('firstName') }, 'w-full')}
+              />
+              <label htmlFor="password">Пароль</label>
+            </span>
+            {getFormErrorMessage('password')}
+            {(error && formik.touched) && <Message severity="error" text={error} />}
+          </>
 
-          <span className="p-float-label ">
-            <InputText
-              id="email"
-              name="email"
-              value={formik.values.email}
-              onChange={(e) => {
-                formik.setFieldValue('email', e.target.value);
-              }}
-              className={classNames({ 'p-invalid': isFormFieldInvalid('firstName') }, 'w-full')}
-            />
-            <label htmlFor="email">e-mail</label>
-          </span>
-          {getFormErrorMessage('email')}
-          <span className="p-float-label w-full">
-            <Password
-              id="password"
-              name="password"
-              value={formik.values.password}
-              toggleMask
-              inputStyle={{ width: '100%' }}
-              weakLabel="Простой"
-              mediumLabel="Средний"
-              strongLabel="Сложный"
-              onChange={(e) => {
-                formik.setFieldValue('password', e.target.value);
-              }}
-              className={classNames({ 'p-invalid': isFormFieldInvalid('firstName') }, 'w-full')}
-            />
-            <label htmlFor="password">Пароль</label>
-          </span>
-          {getFormErrorMessage('password')}
-          {(error && formik.touched) && <Message severity="error" text={error} />}
 
           <Button type="submit" label="Отправить" loading={loading} />
           {isLoginForm ? <p>Нет учетной записи? <a onClick={changeLogin} className="cursor-pointer">Зарегестрироваться</a></p> : <p>Уже есть учетная запись? <a className="cursor-pointer" onClick={changeLogin}>Войти</a></p>}
