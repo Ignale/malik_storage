@@ -103,8 +103,6 @@ function Auth() {
               />
               <label htmlFor="password">Пароль</label>
             </span>
-
-
             {getFormErrorMessage('password')}
             {(error && formik.touched) && <Message severity="error" text={error} />}
           </>
