@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, forwardRef, useRef } from 'react'
+import React, { ForwardedRef, Ref, SyntheticEvent, forwardRef, useRef } from 'react'
 import { TieredMenu } from 'primereact/tieredmenu';
 import { Button } from 'primereact/button';
 import { TieredMenuPassThroughMethodOptions } from 'primereact/tieredmenu';
@@ -12,7 +12,7 @@ type Props = {
 }
 
 
-const HeaderTemplate = forwardRef(function HeaderTemplate({ exportCSV, createSKUs, uploadToGoogle, lookTable }: Props, ref: React.LegacyRef<TieredMenu>) {
+const HeaderTemplate = forwardRef(function HeaderTemplate({ exportCSV, createSKUs, uploadToGoogle, lookTable }: Props, ref: any) {
 
     const ExelTemplate = (data: any) => {
         console.log(data)
@@ -60,7 +60,7 @@ const HeaderTemplate = forwardRef(function HeaderTemplate({ exportCSV, createSKU
     return (
         <div className="card flex justify-content-center">
             <TieredMenu model={items} popup ref={ref} breakpoint="767px" />
-            <Button label="Меню" icon="pi pi-bars" onClick={(e) => ref.current.toggle(e)} />
+            <Button label="Меню" icon="pi pi-bars" onClick={(e) => ref?.current.toggle(e)} />
         </div>
     )
 }
