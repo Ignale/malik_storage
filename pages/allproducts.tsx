@@ -1,38 +1,41 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import { ALL_PRODUCTS_QUERY } from '../lib/queries'
-import { ReatailOffers, DefData } from '../types/appProps'
+import { useQuery } from '@apollo/client'
+import { ReatailOffers, DefData, products } from '../types/appProps'
 import { Grid } from '@mui/material'
 import ProductTable from '@/components/ProductTable'
-import { Skeleton } from 'primereact/skeleton';
-import { useQuery } from '@apollo/client'
+
 import { useRef } from 'react'
 import { Toast } from 'primereact/toast'
 import useSWR from 'swr'
+import MalikPaginator from '@/components/tableTemplates/MalikPaginator'
+import Sceleton from '@/components/tableTemplates/Sceleton'
+
+
 
 const fetcher = (url: string) => fetch(url, {}).then(r => r.json())
 
 const Allproducts = () => {
+  const { loading, data, fetchMore, networkStatus }  = useQuery(ALL_PRODUCTS_QUERY, { variables: { first: 20, last: null, before: null, after: null },notifyOnNetworkStatusChange: true,  fetchPolicy: 'cache-and-network'})
+
+  // useEffect(() => {
+  //   console.log(data?.products?.nodes)
+  //   const write = async () => {
+  //     const writeFile = await fetch('/api/saveLocal', {
+  //       method: 'POST',
+  //       body: JSON.stringify(data?.products?.nodes)
+  //     })
+  //     const dataWr = await writeFile.json()
+  //   }
+  //   if (data?.products?.nodes) {
+  //     write()
+  //   }
+
+  // }, [loading])
+
 
   const toast = useRef<Toast>(null);
-  const { loading, data } = useQuery(ALL_PRODUCTS_QUERY, { variables: { first: 100 } })
-
-  useEffect(() => {
-    console.log(data?.products?.nodes)
-    const write = async () => {
-      const writeFile = await fetch('/api/saveLocal', {
-        method: 'POST',
-        body: JSON.stringify(data?.products?.nodes)
-      })
-      const dataWr = await writeFile.json()
-      console.log(dataWr)
-    }
-    if (data?.products?.nodes) {
-      write()
-    }
-
-  }, [loading])
-
 
   const { data: retData, error: retError } = useSWR<ReatailOffers>('/api/getRetialQuantity', fetcher, {
     refreshInterval: 100000
@@ -45,26 +48,19 @@ const Allproducts = () => {
     toast.current.show({ severity: 'error', summary: 'Ошибка', detail: retError.message, life: 3000 })
   }
   console.log({ data, retData, defData })
-  const Sceleton = () => {
-    return (
-      <>
-        {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="mb-3 mt-3">
-            <Skeleton shape="rectangle" width="100%" height="80px" />
-          </div>
-        ))}
-      </>
-    )
-  }
+
+  
   return (
     <Layout>
-
       <Toast ref={toast} />
-
       <Grid container alignItems={'center'} spacing={5}>
         <Grid item xs={12}>
-
-          {loading ? <Sceleton /> : <ProductTable defData={defData} retData={retData} products={data?.products?.nodes} />}
+        
+        <>
+        <MalikPaginator data={data} fetchMore={fetchMore}/>
+              <ProductTable loading = {loading} defData={defData} retData={retData} products={data?.products?.nodes} />
+        </>
+              
         </Grid>
       </Grid>
     </Layout>

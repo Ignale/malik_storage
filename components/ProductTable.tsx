@@ -2,9 +2,9 @@ import { DefData, ReatailOffers, Variation, productWithVariation } from '@/types
 import Image from 'next/image'
 import * as xlsx from 'xlsx'
 import useSWRMutation from 'swr/mutation'
-import { InputText } from 'primereact/inputtext';
+import HeaderTemplate from './tableTemplates/HeaderTemplate'
 import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
-import { useRef, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import imgPlaceholder from '../public/img/placeholder-800x800.png'
 import { actHistory, actObj } from '@/types/authTypes';
 import { DataTable, DataTableRowToggleEvent, DataTableExpandedRows, DataTableRowEditCompleteEvent, DataTableValue } from 'primereact/datatable';
@@ -13,11 +13,15 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
 import { Toast } from 'primereact/toast';
+import MalikPaginator from './tableTemplates/MalikPaginator';
 import { OfferToUpdate } from '@/types/appProps';
 import styled from '@emotion/styled';
 import { devices } from '@/lib/mediaQueries';
 import { getUser } from '@/session/SessionProvider'
 import moreButtonTemplate from './tableTemplates/moreButtonTemplate';
+import Sceleton from './tableTemplates/Sceleton';
+import { TieredMenu } from 'primereact/tieredmenu'
+import { InputText } from 'primereact/inputtext'
 
 async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
   const requestOptions = {
@@ -38,38 +42,39 @@ async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
 
 
 
-async function createProductCRM(url: string, { arg }: { arg: { product: productWithVariation, variation: Variation } }) {
-  const requestOptions = {
-    method: 'POST',
-    body: JSON.stringify(arg),
-  };
-  try {
-    const response = await fetch(url, requestOptions)
-    if (response.ok) {
-      return response.json()
-    }
-  } catch (err) {
-    console.log(err)
-    return err
-  }
+// async function createProductCRM(url: string, { arg }: { arg: { product: productWithVariation, variation: Variation } }) {
+//   const requestOptions = {
+//     method: 'POST',
+//     body: JSON.stringify(arg),
+//   };
+//   try {
+//     const response = await fetch(url, requestOptions)
+//     if (response.ok) {
+//       return response.json()
+//     }
+//   } catch (err) {
+//     console.log(err)
+//     return err
+//   }
 
-}
+// }
 
 type ProductTableProps = {
   products?: productWithVariation[]
   retData?: ReatailOffers
   defData?: DefData[]
+  loading: boolean
 }
 
-export default function ProductTable({ products, retData, defData }: ProductTableProps) {
+export default function ProductTable({ products, retData, defData, loading }: ProductTableProps) {
 
   const toast = useRef<Toast>(null);
 
+  const menu = useRef<TieredMenu>(null);
+
   const [globalFilter, setGlobalFilter] = useState('')
 
-  const [history, setHistory] = useState<actHistory[] | null>(null)
-
-  const [tableProducts, setTableProducts] = useState<productWithVariation[] | []>(() => [...products!])
+  const [tableProducts, setTableProducts] = useState<productWithVariation[] | []>([])
 
   const [retailTableData, setRetailTableData] = useState<ReatailOffers | undefined>(() => retData)
 
@@ -78,6 +83,15 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[]>([]);
 
   const { user } = getUser()
+
+  useEffect(() => {
+    if (loading) {
+      setTableProducts(() => [])
+    }
+    setTableProducts(() => products!)
+    setRetailTableData(() => retData)
+  }, [loading])
+
 
   const expandAll = () => {
     let _expandedRows: {
@@ -289,23 +303,7 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
     }
   }
 
-  const header = (
-    <div className="flex flex-wrap justify-content-end gap-3">
-      <Button label="Скачать exel" icon="pi pi-file-excel" className="p-button-help" onClick={exportCSV} />
-      {user?.role === 'admin' && <>
-        <Button label="Cоздать SKU" icon="pi pi-file-edit" className="p-button-help" onClick={createSKUs} />
-        <Button label="Выгрузить данные в таблицу" icon="pi pi-upload" className="p-button-help" onClick={uploadToGoogle} />
-        <Button label="Синхронизировать с exel" icon="pi pi-sync" className="p-button-help" onClick={lookTable} />
-      </>}
-      <MalikInputText className="p-input-icon-left">
-        <i className="pi pi-search" />
-        <InputText onChange={searchHandler} style={{ width: '100%' }} placeholder="Поиск" />
-      </MalikInputText>
-      <MalikButtonExpantion icon="pi pi-plus" onClick={expandAll} label="Расширить все" text />
-      <MalikButtonExpantion icon="pi pi-minus" onClick={collapseAll} label="Свернуть все" text />
 
-    </div>
-  )
 
   const getStockSeverity = (rowData: Variation) => {
     switch (rowData.stockStatus) {
@@ -415,23 +413,33 @@ export default function ProductTable({ products, retData, defData }: ProductTabl
   }
 
   return (
-    <>
-      <Toast ref={toast} />
-      <MalikDataTable value={tableProducts} editMode='row' onRowToggle={(e: DataTableRowToggleEvent) => setExpandedRows(e.data)}
-        expandedRows={expandedRows} rowExpansionTemplate={rowExpansionTemplate}
-        filterDisplay="menu" globalFilter={globalFilter} globalFilterFields={['name', 'variations.nodes.name']}
-        dataKey="id" header={header}>
-        <Column expander style={{ width: '3em' }} />
-        <Column field="name" body={(rowData: productWithVariation) => (
-          <>
-            <a style={{ fontWeight: 600 }} href={`${rowData.link}`}>
-              {rowData.name}
-            </a>
-          </>
-        )} header="Название" />
-        <Column body={(rowData: productWithVariation) => rowData.variations.nodes.reduce((acc, curr) => acc + (curr.stockQuantity === null ? 0 : curr.stockQuantity), 0)} header="Количество" />
-      </MalikDataTable>
-    </>
+    loading ? <Sceleton /> :
+      <>
+        <Toast ref={toast} />
+        <MalikDataTable value={tableProducts} editMode='row' onRowToggle={(e: DataTableRowToggleEvent) => setExpandedRows(e.data)}
+          expandedRows={expandedRows} rowExpansionTemplate={rowExpansionTemplate}
+          filterDisplay="menu" globalFilter={globalFilter} globalFilterFields={['name', 'variations.nodes.name']}
+          dataKey="id" header={<div className='flex justify-content-between'>
+            <MalikInputText className="p-input-icon-left">
+              <i className="pi pi-search" />
+              <InputText onChange={searchHandler} style={{ width: '100%' }} placeholder="Поиск" />
+            </MalikInputText>
+            <HeaderTemplate exportCSV={exportCSV} lookTable={lookTable} uploadToGoogle={uploadToGoogle} createSKUs={createSKUs} ref={menu} />
+          </ div>}>
+
+          <Column expander style={{ width: '3em' }} />
+          <Column field="name" body={(rowData: productWithVariation) => (
+            <>
+              <a style={{ fontWeight: 600 }} href={`${rowData.link}`}>
+                {rowData.name}
+              </a>
+            </>
+          )} header="Название" />
+          <Column body={(rowData: productWithVariation) => rowData.variations.nodes.reduce((acc, curr) => acc + (curr.stockQuantity === null ? 0 : curr.stockQuantity), 0)} header="Количество" />
+
+        </MalikDataTable>
+      </>
+
   )
 }
 
@@ -446,7 +454,8 @@ const MalikButtonExpantion = styled(Button)({
   }
 })
 
-const MalikInputText = styled('span')({
+const MalikInputText = styled('div')({
+  width: '50%',
   [devices.mobileL]: {
     width: '100%!important'
   }

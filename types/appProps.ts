@@ -2,7 +2,7 @@ import { Key } from "react";
 import React from 'react'
 
 export declare interface AppProps {
-  children?: React.ReactNode | JSX.Element | JSX.Element[] ;
+  children?: React.ReactNode | JSX.Element | JSX.Element[];
   childrenElement?: JSX.Element; // A single React element
   style?: React.CSSProperties; // to pass through style props
   onChange?: React.FormEventHandler<HTMLInputElement>;
@@ -58,7 +58,7 @@ export interface retailProduct {
     name: string,
     sym: string,
     vatRate: string
-  }, 
+  },
   quantity: number,
   updatedAt: Date,
   url: string,
@@ -74,26 +74,45 @@ export interface retailProduct {
       priceType: string,
       price: number,
       ordering: number,
-      currency: 'RUB' 
+      currency: 'RUB'
     }[],
     quantity: number
-    
+
   }[]
-  
+
 }
+
+export type pageInfo = {
+  endCursor: string,
+  hasNextPage: boolean,
+  hasPreviousPage: boolean,
+  startCursor: string
+}
+
+export type queryVars = {
+  variables: {
+    first: number | null,
+    after: string | null,
+    last: number | null,
+    before: string | null
+  }
+
+}
+
 export interface products {
   products?: {
-    nodes: productWithVariation[]
-  } 
+    nodes: productWithVariation[],
+    pageInfo: pageInfo
+  }
 }
 export interface productWithVariation {
   id: Key;
   name: string;
   productId: string;
   link: string
-  variations:{
-    nodes:Variation[]
-  }  
+  variations: {
+    nodes: Variation[]
+  }
 }
 export interface ReatailOffers {
   success: boolean,
@@ -105,7 +124,7 @@ export interface ReatailOffers {
   }
   offers: Offer[]
 }
-type Offer ={
+type Offer = {
   id: number
   xmlId: string
   externalId: string
@@ -115,8 +134,8 @@ type Offer ={
 export type OfferToUpdate = {
   productId?: Key,
   variationId?: string,
-  retailId?: number, 
-  count : number | null
+  retailId?: number,
+  count: number | null
 }
 
 export type DefData = {
@@ -130,7 +149,7 @@ export interface WooProductVariation {
   parent_id?: number;
   stock_quantity: number | null;
   manage_stock: boolean;
-  stock_status: 'instock' | 'outofstock' | 'onbackorder' | 'pending' | 'draft' 
+  stock_status: 'instock' | 'outofstock' | 'onbackorder' | 'pending' | 'draft'
   attributes: wooAttribute[]
   image: wooImage
   weight: string
@@ -144,13 +163,14 @@ export interface WooProductVariation {
 }
 export type mediaItems = {
   mediaItems: {
-  nodes: mediaItem[]
-  pageInfo: {
-        hasNextPage: boolean,
-        endCursor: string,
-        startCursor: string,
-        hasPreviousPage: boolean
-      }}
+    nodes: mediaItem[]
+    pageInfo: {
+      hasNextPage: boolean,
+      endCursor: string,
+      startCursor: string,
+      hasPreviousPage: boolean
+    }
+  }
 }
 export type mediaItem = {
   id: Key,
@@ -164,7 +184,7 @@ export type wooImage = {
   alt_text: string,
   description?: string,
 }
-type wooCategory = {  
+type wooCategory = {
   id: number
 }
 type wooAttribute = {
@@ -216,7 +236,7 @@ export interface WooProduct {
   sale_price?: number;
   price?: number;
   regular_price?: number;
-  stock_status: 'instock' | 'outofstock' | 'onbackorder' | 'pending' | 'draft' 
+  stock_status: 'instock' | 'outofstock' | 'onbackorder' | 'pending' | 'draft'
   backorders: 'no' | 'notify' | 'yes',
   backorders_allowed: boolean,
   weight: string,
@@ -229,9 +249,9 @@ export interface WooProduct {
   dimensions: {
     length: string,
     width: string,
-    height: string, 
+    height: string,
   },
-  
+
 }
 export type UploadData = {
   id: number,
@@ -241,12 +261,12 @@ export type UploadData = {
 
 export type WooProductCategory = WooProductAttribute[]
 
-export type WooProductAttributes= {
+export type WooProductAttributes = {
   pa_cvet: WooProductAttribute[],
   pa_size: WooProductAttribute[],
 }
 
-export type WooProductAttribute= {
+export type WooProductAttribute = {
   databaseId: number,
   name: string,
   id: Key
