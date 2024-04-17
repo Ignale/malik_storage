@@ -44,14 +44,6 @@ export default async function (req: NextApiRequest,res: NextApiResponse) {
 
     const variationData = await api.post(`products/${wooResponse.data.id}/variations/batch`, {create: variations})
 
-    // const gusLapki = await api.get(`products/4640`)
-    // console.log(gusLapki.data)
-
-    // const productGroups = await fetch(`https://malik-brand.retailcrm.ru/api/v5/store/product-groups?apiKey=${process.env.API_KEY}`)
-    // const productGroupsData = await productGroups.json()
-
-    // console.log(productGroupsData)
-
     const createdVariations = variationData.data.create
 
   const retProdBody = JSON.stringify([{

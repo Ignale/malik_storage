@@ -70,7 +70,7 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
 
   const toast = useRef<Toast>(null);
 
-  const menu = useRef<TieredMenu>(null);
+  const menu = useRef(null);
 
   const [globalFilter, setGlobalFilter] = useState('')
 
@@ -103,13 +103,9 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
     setExpandedRows(_expandedRows);
   };
 
-  const collapseAll = () => {
-    setExpandedRows([]);
-  };
-
   const { trigger } = useSWRMutation(`/api/sync`, updateInventory, {
     onError: (err) => {
-      console.log(err)
+
       toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: err.message, life: 3000 })
     },
     onSuccess: (data) => {
@@ -277,6 +273,41 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
       console.log(error)
     }
   }
+
+  const deleteCustomerDuplicates = async () => {
+    try {
+      const res = await fetch('/api/deleteCustomerDuplicates')
+      if (!res.ok) {
+        throw new Error('error')
+      }
+      const data = await res.json()
+      console.log(data)
+      if (data.success) {
+        toast.current!.show({ severity: 'success', summary: 'Успешно', detail: data.message, life: 3000 })
+      }
+    } catch (error) {
+      console.log(error)
+      toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: 'Error', life: 3000 })
+    }
+  }
+
+  const fixExternalId = async () => {
+    try {
+      const res = await fetch('/api/fixExternalId')
+      if (!res.ok) {
+        throw new Error('error')
+      }
+      const data = await res.json()
+      console.log(data)
+      if (data.success) {
+        toast.current!.show({ severity: 'success', summary: 'Успешно', detail: data.message, life: 3000 })
+      }
+    } catch (error) {
+      console.log(error)
+      toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: 'Error', life: 3000 })
+    }
+  }
+
   const uploadToGoogle = async () => {
     try {
       const res = await fetch('/api/uploadToApiSheets')
@@ -345,7 +376,6 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
     console.log(defectTableData)
     console.log(rowData)
     const quantity = defectTableData && defectTableData[defectTableData.findIndex(data => data.databaseId === rowData.databaseId)]?.defectQuantity
-    console.log((quantity ?? 0))
     return (quantity ?? 0)
   }
 
@@ -389,7 +419,7 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
     return (
       <div className="p-3">
         <h4 className='mb-4'>Вариации для {data.name}</h4>
-        <DataTable dataKey='id' editMode='row' onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }} value={data.variations.nodes}>
+        <DataTable maxLength={20} dataKey='id' editMode='row' onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }} value={data.variations.nodes}>
           <Column style={{ width: '10%' }} field="featuredImage" header="Изображение" body={imageBodyTemplate}></Column>
           <Column style={{ width: '20%' }} field="name" body={(rowData: Variation) => rowData.name + ` (id: ${rowData.databaseId})`} header="Название" sortable></Column>
           <Column style={{ width: '15%' }} field="stockStatus" header="Наличие" sortable body={stockStatusTemplate}></Column>
@@ -424,7 +454,7 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
               <i className="pi pi-search" />
               <InputText onChange={searchHandler} style={{ width: '100%' }} placeholder="Поиск" />
             </MalikInputText>
-            <HeaderTemplate exportCSV={exportCSV} lookTable={lookTable} uploadToGoogle={uploadToGoogle} createSKUs={createSKUs} ref={menu} />
+            <HeaderTemplate exportCSV={exportCSV} lookTable={lookTable} uploadToGoogle={uploadToGoogle} createSKUs={createSKUs} deleteCustomerDuplicates={deleteCustomerDuplicates} fixExternalId={fixExternalId} ref={menu} />
           </ div>}>
 
           <Column expander style={{ width: '3em' }} />

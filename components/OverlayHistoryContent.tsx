@@ -1,11 +1,9 @@
 import { actHistory } from '@/types/authTypes'
 import styled from '@emotion/styled'
 import React from 'react'
-type overlayProps = {
-  history: actHistory
-}
 
-function OverlayHistoryContent({ history }: overlayProps) {
+
+export default function OverlayHistoryContent({ history }: { history: actHistory }) {
   return (
     <OverLayWrapper>
       <OverLayHeader>
@@ -20,10 +18,12 @@ function OverlayHistoryContent({ history }: overlayProps) {
       </OverLayHeader>
 
       <OverLayChange>
-        {history.actionArr.map((action) => (<OverLayAction>
-          Значение <span>{action.objName === 'stockQuantity' ? 'Количество' : 'Цена'}</span> было изменено с <span>{action.prevValue}</span> на
-          <span> {action.newValue}</span>
-        </OverLayAction>))}
+        {history.actionArr.map((action, index) => (
+          <OverLayAction key={index}>
+            Значение <span>{action.objName === 'stockQuantity' ? 'Количество' : 'Цена'}</span> было изменено с <span>{action.prevValue}</span> на
+            <span> {action.newValue}</span>
+          </OverLayAction>
+        ))}
       </OverLayChange>
     </OverLayWrapper>
   )
@@ -70,6 +70,3 @@ const OverLayAction = styled.div`
     font-weight: 600;
   };
 `
-
-
-export default OverlayHistoryContent

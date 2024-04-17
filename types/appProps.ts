@@ -18,6 +18,7 @@ export type row = [
   string, string, string, string?
 ]
 export type rows = row[]
+export type customerToCombine = { resultCustomer: { id: number }, customers: { id: number }[] }
 export interface Variation {
   id: Key;
   name: string;
