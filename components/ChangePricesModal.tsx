@@ -4,7 +4,7 @@ import { Dialog } from 'primereact/dialog';
 import { InputNumber } from 'primereact/inputnumber';
 import { Toast } from 'primereact/toast';
 import { Nullable } from 'primereact/ts-helpers';
-import { Dispatch, RefObject, SetStateAction, useState } from 'react'
+import { Dispatch, RefObject, SetStateAction, SyntheticEvent, useState } from 'react'
 
 type Props = {
   visibleBatchModal: boolean
@@ -16,7 +16,7 @@ type Props = {
 function ChangePricesModal({ setVisibleBatchModal, visibleBatchModal, tableProducts, toast }: Props) {
   const [value, setValue] = useState<Nullable<number | null>>(0)
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
       const res = await fetch('/api/batchChangePrices', {
