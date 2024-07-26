@@ -47,7 +47,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   // let uniqueEmails = new Set() as Set<string>
 
   let uniquePhones = new Set() as Set<string>
-  const normalClients = [];
+  const normalClients: any[] = [];
   //normalize phone numbers
   mergedCustomerArray.forEach((el) => {
     const numbers: string[] = el.phones.map((phone: { number: string }) => phone.number.replace(/[^0-9]/g, ''))
@@ -70,7 +70,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     }
     return { id: doubleClients[0].id }
   }
-  const doubles = [];
+  const doubles: any[] = [];
   const arrayPhones = Array.from(uniquePhones)
   const phoneClients = arrayPhones.forEach((uniquePhone: string) => {
     const doubleClients = normalClients.filter((client) => client.phones.some((phone: string[]) => phone.includes(uniquePhone)))
