@@ -1,7 +1,8 @@
-import React, { ForwardedRef, Ref, SyntheticEvent, forwardRef, useRef } from 'react'
+import React, { SyntheticEvent, forwardRef, Dispatch, SetStateAction } from 'react'
 import { TieredMenu } from 'primereact/tieredmenu';
 import { Button } from 'primereact/button';
 import { TieredMenuPassThroughMethodOptions } from 'primereact/tieredmenu';
+import { productWithVariation } from '@/types/appProps';
 
 type Props = {
   exportCSV: () => void
@@ -10,16 +11,21 @@ type Props = {
   lookTable: () => Promise<void>
   deleteCustomerDuplicates: () => Promise<void>
   fixExternalId: () => Promise<void>
+  saveLocally: () => Promise<void>
+  showBatchChangePricesPopup: Dispatch<SetStateAction<boolean>>
+  tableProducts: productWithVariation[] | []
 }
 
 
-const HeaderTemplate = forwardRef(function HeaderTemplate({ exportCSV, createSKUs, uploadToGoogle, lookTable, deleteCustomerDuplicates, fixExternalId }: Props, ref: any) {
+const HeaderTemplate = forwardRef(function HeaderTemplate({ exportCSV, createSKUs, uploadToGoogle, lookTable, deleteCustomerDuplicates, fixExternalId, showBatchChangePricesPopup, saveLocally, tableProducts }: Props, ref: any) {
 
   const ExelTemplate = (data: any) => {
     const menuHandler = (e: SyntheticEvent) => {
       e.preventDefault()
       data.onClick()
     }
+
+
     return (
       <a onClick={menuHandler} className='p-menuitem-link' href="">
         <span className={data.icon}></span>
@@ -65,6 +71,18 @@ const HeaderTemplate = forwardRef(function HeaderTemplate({ exportCSV, createSKU
       label: 'Добавить внешние ID',
       icon: 'pi pi-id-card',
       onClick: fixExternalId,
+      template: ExelTemplate
+    },
+    {
+      label: 'сохранить локально',
+      icon: 'pi pi-id-card',
+      onClick: saveLocally,
+      template: ExelTemplate
+    },
+    {
+      label: 'Массовое редактирование цен',
+      icon: 'pi pi-money-bill',
+      onClick: () => showBatchChangePricesPopup(true),
       template: ExelTemplate
     },
   ];

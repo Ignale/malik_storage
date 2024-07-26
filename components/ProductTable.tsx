@@ -22,6 +22,7 @@ import moreButtonTemplate from './tableTemplates/moreButtonTemplate';
 import Sceleton from './tableTemplates/Sceleton';
 import { TieredMenu } from 'primereact/tieredmenu'
 import { InputText } from 'primereact/inputtext'
+import ChangePricesModal from './ChangePricesModal'
 
 async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
   const requestOptions = {
@@ -79,6 +80,8 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
   const [retailTableData, setRetailTableData] = useState<ReatailOffers | undefined>(() => retData)
 
   const [defectTableData, setDefectTableData] = useState<DefData[] | undefined>(() => defData)
+
+  const [visibleBatchModal, setVisibleBatchModal] = useState<boolean>(false)
 
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[]>([]);
 
@@ -200,8 +203,6 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
     }
     const actionArr = createActionArr(data, newData)
 
-    console.log(actionArr)
-
     const args = {
       productId: tableProducts![parentIndex].productId,
       variationId: newData.databaseId,
@@ -236,6 +237,22 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
   const searchHandler = (e: React.BaseSyntheticEvent) => {
     const value = e.target.value;
     setGlobalFilter(value);
+  }
+
+  const saveLocally = async () => {
+    try {
+      const res = await fetch('/api/saveLocal', {
+        method: "POST",
+        body: JSON.stringify(tableProducts)
+      })
+      if (!res.ok) {
+        throw new Error('somethin went wrong')
+      }
+      const data = await res.json()
+      toast.current!.show({ severity: 'success', summary: 'Успешно', detail: data.message, life: 3000 })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const exportCSV = () => {
@@ -446,6 +463,7 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
     loading ? <Sceleton /> :
       <>
         <Toast ref={toast} />
+        <ChangePricesModal setVisibleBatchModal={setVisibleBatchModal} visibleBatchModal={visibleBatchModal} tableProducts={tableProducts} toast={toast} />
         <MalikDataTable value={tableProducts} editMode='row' onRowToggle={(e: DataTableRowToggleEvent) => setExpandedRows(e.data)}
           expandedRows={expandedRows} rowExpansionTemplate={rowExpansionTemplate}
           filterDisplay="menu" globalFilter={globalFilter} globalFilterFields={['name', 'variations.nodes.name']}
@@ -454,7 +472,7 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
               <i className="pi pi-search" />
               <InputText onChange={searchHandler} style={{ width: '100%' }} placeholder="Поиск" />
             </MalikInputText>
-            <HeaderTemplate exportCSV={exportCSV} lookTable={lookTable} uploadToGoogle={uploadToGoogle} createSKUs={createSKUs} deleteCustomerDuplicates={deleteCustomerDuplicates} fixExternalId={fixExternalId} ref={menu} />
+            <HeaderTemplate exportCSV={exportCSV} lookTable={lookTable} uploadToGoogle={uploadToGoogle} createSKUs={createSKUs} deleteCustomerDuplicates={deleteCustomerDuplicates} fixExternalId={fixExternalId} showBatchChangePricesPopup={setVisibleBatchModal} tableProducts={tableProducts} saveLocally={saveLocally} ref={menu} />
           </ div>}>
 
           <Column expander style={{ width: '3em' }} />

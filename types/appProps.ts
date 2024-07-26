@@ -14,6 +14,12 @@ export type obejctToExport = {
   'Количество в CRM': number | null
 }[]
 
+export type localProduct = {
+  productId: number,
+  variations: { variationId: number, sku: string | null, price: string }[]
+}
+export type localVariation = { id: number, sku: string, price: string }
+
 export type row = [
   string, string, string, string?
 ]

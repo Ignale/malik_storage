@@ -18,8 +18,7 @@ const fetcher = (url: string) => fetch(url, {}).then(r => r.json())
 const Allproducts = () => {
   const { loading, data, fetchMore, networkStatus } = useQuery(ALL_PRODUCTS_QUERY, { variables: { first: 20, last: null, before: null, after: null }, notifyOnNetworkStatusChange: true, fetchPolicy: 'cache-first' })
 
-
-
+  console.log(loading)
   const toast = useRef<Toast>(null);
 
   const { data: retData, error: retError } = useSWR<ReatailOffers>('/api/getRetialQuantity', fetcher, {
