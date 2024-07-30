@@ -46,15 +46,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
   try {
     const wooResponse = await api.put(`products/${arg.productId}/variations/${arg.variationId}`, wooData)
-    console.log(wooResponse)
-
-    // const defResponse = await fetch('https://malik-storage-default-rtdb.firebaseio.com/defects/.json', {
-    //   method: 'PUT',
-    //   body: JSON.stringify(arg.defectData)
-    // })
-    // const updatedDefData = await defResponse.json()
-
-    // console.log(updatedDefData)
+    // console.log(wooResponse)
 
     const histroyResponse = await fetch(`https://malik-storage-default-rtdb.firebaseio.com/history/${arg.history.sku}.json`,
       {
@@ -85,22 +77,20 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     })
 
     const prMessage = await retPrResponse.json()
-    // console.log({woo: wooResponse.data, ret: message, def: updatedDefData})
-    console.log('ret', retPrResponse)
 
-    const apiSheetResponse = await fetch('https://api.apispreadsheets.com/data/cb6Zu2tx0RCF9XBY/"', {
+    const apiSheetResponse = await fetch('https://api.apispreadsheets.com/data/cb6Zu2tx0RCF9XBY/', {
       method: 'POST',
       body: JSON.stringify({
         data: { "Количество в CRM": `${arg.count}` }, query: `select*fromcb6Zu2tx0RCF9XBYwhereАртикул='${arg.xmlId}'`
       })
     })
-    console.log('sheet', apiSheetResponse)
     if (!apiSheetResponse.ok) {
-      // console.log(apiSheetResponse.status)
+      const errorResponse = apiSheetResponse;
+      console.log('hello', errorResponse)
       throw new Error('error updating sheet data')
     }
-
-    const resultSheetUpdate = await apiSheetResponse.json()
+    const resultSheetUpdate = await apiSheetResponse.statusText
+    console.log('hello', resultSheetUpdate)
 
     return res.status(200).json({
       woo: wooResponse.data, ret: { offer: ofMessage, price: prMessage },
@@ -108,7 +98,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
       history: updatedHistData
     })
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json(error)
   }
 }

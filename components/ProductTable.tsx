@@ -112,10 +112,10 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
       toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: err.message, life: 3000 })
     },
     onSuccess: (data) => {
-      console.log(data)
-      const retOfResp = JSON.parse(data.ret.offer)
-      const retPrResp = JSON.parse(data.ret.price)
-      console.log({ retOfResp, retPrResp })
+
+      const retOfResp = data.ret?.offer
+      const retPrResp = data.ret?.price
+
       if (retPrResp.success && retOfResp.success && data.woo) {
         toast.current!.show({ severity: 'success', summary: 'Успешно', detail: 'Данные синхронизированы', life: 3000 })
       } else {
@@ -441,7 +441,7 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
           <Column style={{ width: '20%' }} field="name" body={(rowData: Variation) => rowData.name + ` (id: ${rowData.databaseId})`} header="Название" sortable></Column>
           <Column style={{ width: '15%' }} field="stockStatus" header="Наличие" sortable body={stockStatusTemplate}></Column>
           <Column style={{ width: '15%' }} field="stockQuantity" editor={user?.role === 'admin' ? numberEditor : false} header="Кол-во в магазине" body={stockQuantityTemplate} sortable></Column>
-          <Column style={{ width: '10%' }} field="price" editor={(user?.role === 'admin' || 'manager') ? numberEditor : false} header="Цена" sortable></Column>
+          <Column style={{ width: '10%' }} field="price" editor={(user?.role === 'admin' || user?.role === 'manager') ? numberEditor : false} header="Цена" sortable></Column>
           <Column style={{ width: '10%' }} header='Кол-во в CRM' body={retailQuantityTemplate}>
           </Column>
           <Column style={{ width: '10%' }} header='SKU' body={skuTemplate}>
