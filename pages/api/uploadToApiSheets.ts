@@ -50,11 +50,14 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         return
       }
       const groups = new Map
-      groups.set(950, 'нули')
-      groups.set(949, 'лето')
-      groups.set(948, 'демисезон')
-      groups.set(947, 'потеплее')
-      groups.set(946, 'outlet')
+      groups.set(950, 'Нули')
+      groups.set(949, 'Лето')
+      groups.set(948, 'Демисезон')
+      groups.set(947, 'Потеплее')
+      groups.set(946, 'Outlet')
+      groups.set(951, 'Вечерние платья')
+      groups.set(952, 'Рубашки')
+      groups.set(953, 'Костюмы')
 
       let groupName = product.groups[0] ? groups.get(product.groups[0].id) : ''
 
