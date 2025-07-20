@@ -13,16 +13,21 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
 import { Toast } from 'primereact/toast';
-import MalikPaginator from './tableTemplates/MalikPaginator';
 import { OfferToUpdate } from '@/types/appProps';
 import styled from '@emotion/styled';
 import { devices } from '@/lib/mediaQueries';
 import { getUser } from '@/session/SessionProvider'
 import moreButtonTemplate from './tableTemplates/moreButtonTemplate';
 import Sceleton from './tableTemplates/Sceleton';
-import { TieredMenu } from 'primereact/tieredmenu'
+import { getStockSeverity, expandRowHandler } from '@/lib/helpers';
 import { InputText } from 'primereact/inputtext'
 import ChangePricesModal from './ChangePricesModal'
+import CreateSkuButton from './tableTemplates/CreateSkuButton'
+import defectTemplate from './tableTemplates/defectTemplate'
+import imageBodyTemplate from './tableTemplates/imageBodyTemplate'
+import stockQuantityTemplate from './tableTemplates/stockQuantityTemplate'
+import defectQuantityEditor from './tableTemplates/defectQuantityEditor'
+import stockStatusTemplate from './tableTemplates/stockStatusTemplate'
 
 async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
   const requestOptions = {
@@ -41,41 +46,20 @@ async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
 
 }
 
-
-
-// async function createProductCRM(url: string, { arg }: { arg: { product: productWithVariation, variation: Variation } }) {
-//   const requestOptions = {
-//     method: 'POST',
-//     body: JSON.stringify(arg),
-//   };
-//   try {
-//     const response = await fetch(url, requestOptions)
-//     if (response.ok) {
-//       return response.json()
-//     }
-//   } catch (err) {
-//     console.log(err)
-//     return err
-//   }
-
-// }
-
 type ProductTableProps = {
-  products?: productWithVariation[]
+  tableProducts: productWithVariation[]
   retData?: ReatailOffers
   defData?: DefData[]
   loading: boolean
 }
 
-export default function ProductTable({ products, retData, defData, loading }: ProductTableProps) {
+export default function ProductTable({ tableProducts, retData, defData, loading }: ProductTableProps) {
 
   const toast = useRef<Toast>(null);
 
   const menu = useRef(null);
 
   const [globalFilter, setGlobalFilter] = useState('')
-
-  const [tableProducts, setTableProducts] = useState<productWithVariation[] | []>([])
 
   const [retailTableData, setRetailTableData] = useState<ReatailOffers | undefined>(() => retData)
 
@@ -86,25 +70,6 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[]>([]);
 
   const { user } = getUser()
-
-  useEffect(() => {
-    if (loading) {
-      setTableProducts(() => [])
-    }
-    setTableProducts(() => products!)
-    setRetailTableData(() => retData)
-  }, [loading])
-
-
-  const expandAll = () => {
-    let _expandedRows: {
-      [key: string]: boolean;
-    } = {};
-
-    Object.values(tableProducts!).forEach((p) => (_expandedRows[`${p.id}`] = true));
-
-    setExpandedRows(_expandedRows);
-  };
 
   const { trigger } = useSWRMutation(`/api/sync`, updateInventory, {
     onError: (err) => {
@@ -124,25 +89,6 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
     },
     revalidate: true
   })
-
-
-  // const { trigger: createTrigger } = useSWRMutation(`/api/createInCRM`, createProductCRM, {
-  //   onError: (err) => {
-  //     console.log(err)
-  //     toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: err.message, life: 3000 })
-  //   },
-  //   onSuccess: (data) => {
-  //     console.log(data)
-  //     // const retResp = JSON.parse(data)
-  //     // if (retResp.success && data.woo) {
-  //     //   toast.current!.show({ severity: 'success', summary: 'Успешно', detail: 'Данные синхронизированы', life: 3000 })
-  //     // } else {
-  //     //   console.log(data)
-  //     //   toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: "Ошибка синхронизации", life: 3000 })
-  //     // }
-  //   },
-  //   revalidate: true
-  // })
 
   const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
 
@@ -164,16 +110,16 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
 
     const retQuantity = retailTableData?.offers.find(offer => offer.xmlId == newData.sku)?.quantity
 
-    const retailCount = retailTableData?.offers.find(offer => offer.xmlId == newData.sku)
+    const retailCount = retData?.offers.find(offer => offer.xmlId == newData.sku)
 
     let parentIndex = Object.values(tableProducts!).findIndex((product) => product.variations.nodes.find((variation) => variation.sku === e.data.sku))
 
-    setTableProducts((prev) => {
-      const newProdData = structuredClone(prev!)
-      newProdData[parentIndex].variations.nodes[index] = newData as Variation
-      return newProdData
-    }
-    )
+    // setTableProducts((prev) => {
+    //   const newProdData = structuredClone(prev!)
+    //   newProdData[parentIndex].variations.nodes[index] = newData as Variation
+    //   return newProdData
+    // }
+    // )
 
     setRetailTableData(({ ...prev }) => {
       const newRetailData = { ...prev }
@@ -257,22 +203,24 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
 
   const exportCSV = () => {
     const obejctToExport = [] as any
-    tableProducts.forEach((product) => product.variations.nodes.forEach((variation) => (obejctToExport.push({ 'Название': variation.name, 'Артикул': variation.sku, 'Количество в CRM': variation.stockQuantity }))))
+    tableProducts?.forEach((product) => product.variations.nodes.forEach((variation) => (obejctToExport.push({ 'Название': variation.name, 'Артикул': variation.sku, 'Количество в CRM': variation.stockQuantity }))))
     console.log(obejctToExport)
     const worksheet = xlsx.utils.json_to_sheet(obejctToExport);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     xlsx.writeFile(workbook, "DataSheet.xlsx");
   }
+
   const createSKUs = async () => {
     const productsIds = new Map
-    for (let product of tableProducts) {
-      for (const variation of product.variations.nodes) {
-        if (!variation.sku) {
-          productsIds.set(product.productId, [...product.variations.nodes.map(node => node.databaseId)])
+    if (tableProducts)
+      for (let product of tableProducts) {
+        for (const variation of product.variations.nodes) {
+          if (!variation.sku) {
+            productsIds.set(product.productId, [...product.variations.nodes.map(node => node.databaseId)])
+          }
         }
       }
-    }
     const prJ = Object.fromEntries(productsIds)
     console.log(prJ)
     console.log(productsIds)
@@ -351,105 +299,35 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
     }
   }
 
-
-
-  const getStockSeverity = (rowData: Variation) => {
-    switch (rowData.stockStatus) {
-      case 'IN_STOCK':
-        if (rowData.stockQuantity! === 0 || rowData.stockQuantity === null) return 'danger'
-        if (rowData.stockQuantity! <= 3) return 'warning'
-        return 'success'
-      case 'OUT_OF_STOCK':
-        if (rowData.stockQuantity! === 0 || rowData.stockQuantity === null) return 'danger'
-        if (rowData.stockQuantity! <= 3) return 'warning'
-        if (rowData.stockQuantity! >= 3) return 'success'
-        return 'danger'
-      default:
-        return null
-    }
-  }
-  const getStockQuantitySeverity = (quantity: Variation['stockQuantity']) => {
-    if (quantity === null || quantity === 0) return 'danger'
-    if (quantity < 4) return 'warning'
-    return 'success'
-  }
-
-  const imageBodyTemplate = (rowData: Variation) => {
-    return <Image style={{ objectFit: 'cover' }} className="shadow-4" width={50} height={70} src={rowData.featuredImage ? rowData.featuredImage.node.sourceUrl : imgPlaceholder} alt={rowData.name} />;
-  };
-
-  const stockQuantityTemplate = (rowData: Variation) => {
-
-    const stockQuantity = rowData.stockQuantity ? rowData.stockQuantity : 0
-
-    return (<Tag value={stockQuantity} severity={getStockQuantitySeverity(rowData.stockQuantity)} ></Tag>)
-  }
-
-  const stockStatusTemplate = (rowData: Variation) => (<Tag value={(rowData.stockQuantity! > 0 && rowData.stockQuantity! <= 3) ? 'Мало' :
-    (rowData.stockQuantity! > 3) ? 'В наличии' :
-      'Нет в наличии'} severity={getStockSeverity(rowData)} ></Tag>)
-
-  const defectTemplate = (rowData: Variation) => {
-    console.log(defectTableData)
-    console.log(rowData)
-    const quantity = defectTableData && defectTableData[defectTableData.findIndex(data => data.databaseId === rowData.databaseId)]?.defectQuantity
-    return (quantity ?? 0)
-  }
-
-  const defectQuantityEditor = (options: ColumnEditorOptions) => {
-    console.log(options)
-    const editHandler = (e: InputNumberChangeEvent) => {
-      console.log('edit')
-      setDefectTableData((prev) => {
-        const newDefectData = prev ? [...prev!] : []
-        let newDefectDataIndex = newDefectData.findIndex((data) => data.databaseId === options.rowData.databaseId)
-        if (newDefectDataIndex !== -1) {
-          newDefectData[newDefectDataIndex].defectQuantity = e.value!
-          return newDefectData
-        }
-        newDefectData.push({
-          databaseId: options.rowData.databaseId,
-          fullQuantity: options.rowData.stockQuantity,
-          defectQuantity: e.value!
-        })
-        return newDefectData
-      })
-    }
-    return <InputNumber size={1} onChange={editHandler} />
-  }
-
-  const retailQuantityTemplate = (rowData: Variation) => {
-
-    const quantity = retailTableData?.offers.find(offer => offer.xmlId == rowData.sku)?.quantity
-
-    const value = quantity !== undefined ? quantity : 'Нет в системе'
-    return (
-      <Tag severity={(quantity !== rowData.stockQuantity && rowData.stockQuantity !== null) ? 'warning' : 'info'} value={value}></Tag>)
-  }
-
-  const skuTemplate = (rowData: Variation) => {
-    return rowData.sku
-  }
-
-
   const rowExpansionTemplate = (data: productWithVariation) => {
     return (
       <div className="p-3">
-        <h4 className='mb-4'>Вариации для {data.name}</h4>
+        <div className='flex justify-content-between mb-3'>
+          <h4 className='mb-4'>Вариации для {data.name}</h4>
+          <CreateSkuButton productId={data.productId} variations={data.variations.nodes} toast={toast} />
+        </div>
+
         <DataTable maxLength={20} dataKey='id' editMode='row' onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }} value={data.variations.nodes}>
+
           <Column style={{ width: '10%' }} field="featuredImage" header="Изображение" body={imageBodyTemplate}></Column>
+
           <Column style={{ width: '20%' }} field="name" body={(rowData: Variation) => rowData.name + ` (id: ${rowData.databaseId})`} header="Название" sortable></Column>
+
           <Column style={{ width: '15%' }} field="stockStatus" header="Наличие" sortable body={stockStatusTemplate}></Column>
+
           <Column style={{ width: '15%' }} field="stockQuantity" editor={user?.role === 'admin' ? numberEditor : false} header="Кол-во в магазине" body={stockQuantityTemplate} sortable></Column>
+
           <Column style={{ width: '10%' }} field="price" editor={(user?.role === 'admin' || user?.role === 'manager') ? numberEditor : false} header="Цена" sortable></Column>
-          <Column style={{ width: '10%' }} header='Кол-во в CRM' body={retailQuantityTemplate}>
+
+          <Column style={{ width: '10%' }} header='SKU' body={(rowData: Variation) => rowData.sku}>
           </Column>
-          <Column style={{ width: '10%' }} header='SKU' body={skuTemplate}>
+
+          <Column style={{ width: '10%' }} field='defect_quantity' header='Брак' editor={user?.role === 'admin' ? (options: ColumnEditorOptions) => defectQuantityEditor(options, setDefectTableData) : false} body={(rowData) => defectTemplate(rowData, defectTableData)}>
           </Column>
-          <Column style={{ width: '10%' }} field='defect_quantity' header='Брак' editor={user?.role === 'admin' ? defectQuantityEditor : false} body={defectTemplate}>
-          </Column>
+
           {user && user?.role !== 'user' &&
             <Column style={{ width: '10%' }} rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>}
+
           {user && user?.role !== 'user' &&
             <Column style={{ width: '10%' }} headerStyle={{ width: '10%', minWidth: '8rem' }} body={moreButtonTemplate} >
             </Column>}
@@ -460,11 +338,13 @@ export default function ProductTable({ products, retData, defData, loading }: Pr
   }
 
   return (
-    loading ? <Sceleton /> :
+    !tableProducts ? <Sceleton /> :
       <>
         <Toast ref={toast} />
+
         <ChangePricesModal setVisibleBatchModal={setVisibleBatchModal} visibleBatchModal={visibleBatchModal} tableProducts={tableProducts} toast={toast} />
-        <MalikDataTable value={tableProducts} editMode='row' onRowToggle={(e: DataTableRowToggleEvent) => setExpandedRows(e.data)}
+
+        <MalikDataTable value={tableProducts} editMode='row' onRowToggle={(e: DataTableRowToggleEvent) => expandRowHandler(e, setExpandedRows, tableProducts)}
           expandedRows={expandedRows} rowExpansionTemplate={rowExpansionTemplate}
           filterDisplay="menu" globalFilter={globalFilter} globalFilterFields={['name', 'variations.nodes.name']}
           dataKey="id" header={<div className='flex justify-content-between'>

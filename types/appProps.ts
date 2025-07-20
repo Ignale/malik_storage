@@ -108,7 +108,10 @@ export type queryVars = {
 
 export interface products {
   products?: {
-    nodes: productWithVariation[],
+    edges: {
+      node: productWithVariation,
+      cursor: string
+    }[] | [],
     pageInfo: pageInfo
   }
 }

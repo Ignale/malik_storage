@@ -44,24 +44,24 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     console.log(error)
     return res.status(500).json(error)
   }
-  // let uniqueEmails = new Set() as Set<string>
+  let uniqueEmails = new Set() as Set<string>
 
-  let uniquePhones = new Set() as Set<string>
-  const normalClients: any[] = [];
-  //normalize phone numbers
-  mergedCustomerArray.forEach((el) => {
-    const numbers: string[] = el.phones.map((phone: { number: string }) => phone.number.replace(/[^0-9]/g, ''))
-    normalClients.push({ ...el, phones: numbers })
-    numbers.forEach((number) => {
-      if (number.length === 11) {
-        const normilized = number.slice(1)
-        uniquePhones.add(normilized)
-      }
-      if (number.length === 10) {
-        uniquePhones.add(number)
-      }
-    })
-  })
+  // let uniquePhones = new Set() as Set<string>
+  // const normalClients: any[] = [];
+  // //normalize phone numbers
+  // mergedCustomerArray.forEach((el) => {
+  //   const numbers: string[] = el.phones.map((phone: { number: string }) => phone.number.replace(/[^0-9]/g, ''))
+  //   normalClients.push({ ...el, phones: numbers })
+  //   numbers.forEach((number) => {
+  //     if (number.length === 11) {
+  //       const normilized = number.slice(1)
+  //       uniquePhones.add(normilized)
+  //     }
+  //     if (number.length === 10) {
+  //       uniquePhones.add(number)
+  //     }
+  //   })
+  // })
 
   const findResultCustomer = (doubleClients: any[]) => {
     const withName = doubleClients.filter((client) => client.firstName)
@@ -70,36 +70,36 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     }
     return { id: doubleClients[0].id }
   }
-  const doubles: any[] = [];
-  const arrayPhones = Array.from(uniquePhones)
-  const phoneClients = arrayPhones.forEach((uniquePhone: string) => {
-    const doubleClients = normalClients.filter((client) => client.phones.some((phone: string[]) => phone.includes(uniquePhone)))
-    if (doubleClients.length > 1) {
-      doubles.push({
-        resultCustomer: findResultCustomer(doubleClients),
-        customers: doubleClients.filter((cl) => cl.id !== findResultCustomer(doubleClients)).map((cl) => ({ id: cl.id }))
-      })
-    }
-  })
-
-  // return res.status(200).json(doubles);
-
-  // mergedCustomerArray.forEach((el) => {
-  //   uniqueEmails.add(el.email)
-  // })
-
-  // const doubles: customerToCombine[] = []
-  // uniqueEmails.forEach((uniqueEmail: string) => {
-  //   const doubleClients = mergedCustomerArray.filter((client) => client.email === uniqueEmail)
+  // const doubles: any[] = [];
+  // const arrayPhones = Array.from(uniquePhones)
+  // const phoneClients = arrayPhones.forEach((uniquePhone: string) => {
+  //   const doubleClients = normalClients.filter((client) => client.phones.some((phone: string[]) => phone.includes(uniquePhone)))
   //   if (doubleClients.length > 1) {
   //     doubles.push({
   //       resultCustomer: findResultCustomer(doubleClients),
-  //       customers: doubleClients.filter((cl) => cl.id !== findResultCustomer(doubleClients)).map((cl) => ({ id: cl.id, email: cl.email }))
+  //       customers: doubleClients.filter((cl) => cl.id !== findResultCustomer(doubleClients)).map((cl) => ({ id: cl.id }))
   //     })
-
   //   }
-
   // })
+
+  // return res.status(200).json(doubles);
+
+  mergedCustomerArray.forEach((el) => {
+    uniqueEmails.add(el.email)
+  })
+
+  const doubles: customerToCombine[] = []
+  uniqueEmails.forEach((uniqueEmail: string) => {
+    const doubleClients = mergedCustomerArray.filter((client) => client.email === uniqueEmail)
+    if (doubleClients.length > 1) {
+      doubles.push({
+        resultCustomer: findResultCustomer(doubleClients),
+        customers: doubleClients.filter((cl) => cl.id !== findResultCustomer(doubleClients)).map((cl) => ({ id: cl.id, email: cl.email }))
+      })
+
+    }
+
+  })
   const responses: { customer: customerToCombine, status: string }[] = []
   // const delay = (time: number) => {
   //   return new Promise(res => {

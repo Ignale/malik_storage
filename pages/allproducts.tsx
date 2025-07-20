@@ -3,22 +3,31 @@ import { ALL_PRODUCTS_QUERY } from '../lib/queries'
 import { useQuery } from '@apollo/client'
 import { ReatailOffers, DefData, products } from '../types/appProps'
 import { Grid } from '@mui/material'
+import getDefectquantity from '../actions/getHistory'
 import ProductTable from '@/components/ProductTable'
 
-import { useRef } from 'react'
+import { Suspense, useRef, useState } from 'react'
 import { Toast } from 'primereact/toast'
 import useSWR from 'swr'
 import MalikPaginator from '@/components/tableTemplates/MalikPaginator'
 import Sceleton from '@/components/tableTemplates/Sceleton'
+import { client } from '@/lib/client'
 
 
 
 const fetcher = (url: string) => fetch(url, {}).then(r => r.json())
 
 const Allproducts = () => {
-  const { loading, data, fetchMore, networkStatus } = useQuery(ALL_PRODUCTS_QUERY, { variables: { first: 20, last: null, before: null, after: null }, notifyOnNetworkStatusChange: true, fetchPolicy: 'cache-first' })
 
-  console.log(loading)
+  const [args, setArgs] = useState<{ first: number | null, last: number | null, before: string | null, after: string | null }>({ first: 20, last: null, before: null, after: null })
+
+  // const { products } = client.cache.readQuery({ query: ALL_PRODUCTS_QUERY }) as products;
+
+  // console.log(products);
+  const abortController = useRef<AbortController>(new AbortController());
+
+  const { loading, data, fetchMore, networkStatus, updateQuery, } = useQuery(ALL_PRODUCTS_QUERY, { variables: args, notifyOnNetworkStatusChange: false, fetchPolicy: 'network-only', nextFetchPolicy: 'cache-first', context: { fetchOptions: { signal: abortController.current?.signal } } })
+
   const toast = useRef<Toast>(null);
 
   const { data: retData, error: retError } = useSWR<ReatailOffers>('/api/getRetialQuantity', fetcher, {
@@ -27,6 +36,7 @@ const Allproducts = () => {
   const { data: defData, error: defError } = useSWR<DefData[]>('/api/getDefectquantity', fetcher, {
     refreshInterval: 100000
   })
+
 
   if (retError && toast.current !== null) {
     toast.current.show({ severity: 'error', summary: 'Ошибка', detail: retError.message, life: 3000 })
@@ -40,8 +50,9 @@ const Allproducts = () => {
       <Grid container alignItems={'center'} spacing={5}>
         <Grid item xs={12}>
           <>
-            <MalikPaginator data={data} fetchMore={fetchMore} />
-            <ProductTable loading={loading} defData={defData} retData={retData} products={data?.products?.nodes} />
+            <MalikPaginator abortController={abortController} data={data} setArgs={setArgs} fetchMore={fetchMore} />
+            <ProductTable loading={loading} defData={defData} retData={retData} tableProducts={data?.products?.edges.map((edge: any) => edge.node)} />
+
           </>
         </Grid>
       </Grid>

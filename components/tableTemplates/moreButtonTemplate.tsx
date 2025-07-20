@@ -3,26 +3,10 @@ import { actHistory } from "@/types/authTypes"
 import { Button } from "primereact/button"
 import { OverlayPanel } from "primereact/overlaypanel"
 import { SyntheticEvent, useRef, useState } from "react"
-import useSWRMutation from "swr/mutation"
+import getHistory from "@/actions/getHistory"
 import OverlayHistoryContent from "../OverlayHistoryContent"
 import styled from "@emotion/styled"
 
-
-async function getHistory(url: string, { arg }: { arg: { sku: string } }) {
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      body: arg.sku
-    })
-    if (res.ok) {
-      return res.json()
-    }
-  } catch (error) {
-    console.log(error)
-    return error
-  }
-
-}
 
 const moreButtonTemplate = (rowData: Variation) => {
   const [isFetchinHistory, setIsFetchinHistory] = useState(false)
@@ -31,13 +15,11 @@ const moreButtonTemplate = (rowData: Variation) => {
 
   const isHistory = history.length >= 1
 
-  const { trigger: fetchHistory } = useSWRMutation('/api/getHistory', getHistory)
-
   const op = useRef<OverlayPanel>(null)
 
   const showHistoryHandler = async (e: SyntheticEvent) => {
     setIsFetchinHistory(true)
-    fetchHistory({ sku: rowData.sku }).then((data) => {
+    getHistory({ sku: rowData.sku }).then((data) => {
       let historyArr = []
       for (let key in data) {
         historyArr.push(data[key])
