@@ -145,6 +145,9 @@ export type OfferToUpdate = {
   productId?: Key,
   variationId?: string,
   retailId?: number,
+  id: Key,
+  xmlId?: string,
+  newPrice: number,
   count: number | null
 }
 

@@ -1,9 +1,11 @@
-import Layout from '../components/Layout'
-import { ALL_PRODUCTS_QUERY } from '../lib/queries'
+"use client"
+
+import Layout from '../../components/Layout'
+import { ALL_PRODUCTS_QUERY } from '../../lib/queries'
 import { useQuery } from '@apollo/client'
-import { ReatailOffers, DefData, products } from '../types/appProps'
+import { ReatailOffers, DefData, products } from '../../types/appProps'
 import { Grid } from '@mui/material'
-import getDefectquantity from '../actions/getHistory'
+import getDefectquantity from '../../actions/getHistory'
 import ProductTable from '@/components/ProductTable'
 
 import { Suspense, useRef, useState } from 'react'
@@ -11,7 +13,7 @@ import { Toast } from 'primereact/toast'
 import useSWR from 'swr'
 import MalikPaginator from '@/components/tableTemplates/MalikPaginator'
 import Sceleton from '@/components/tableTemplates/Sceleton'
-import { client } from '@/lib/client'
+
 
 
 

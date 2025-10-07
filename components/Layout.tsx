@@ -1,3 +1,5 @@
+'use client'
+
 import Side from './Side'
 import styled from '@emotion/styled';
 import { AppProps } from '@/types/appProps';

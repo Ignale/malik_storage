@@ -1,3 +1,4 @@
+'use client'
 import { Sertificate } from '@/types/appProps'
 import { DataTable, DataTableRowEditCompleteEvent } from 'primereact/datatable';
 import { Column, ColumnEditorOptions } from 'primereact/column';

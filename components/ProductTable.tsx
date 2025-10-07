@@ -1,25 +1,24 @@
+'use client'
 import { DefData, ReatailOffers, Variation, productWithVariation } from '@/types/appProps'
-import Image from 'next/image'
+import useCache from '@/lib/hooks/useCache'
 import * as xlsx from 'xlsx'
 import useSWRMutation from 'swr/mutation'
 import HeaderTemplate from './tableTemplates/HeaderTemplate'
 import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
-import { forwardRef, useEffect, useRef, useState } from 'react';
-import imgPlaceholder from '../public/img/placeholder-800x800.png'
+import { useRef, useState } from 'react';
 import { actHistory, actObj } from '@/types/authTypes';
 import { DataTable, DataTableRowToggleEvent, DataTableExpandedRows, DataTableRowEditCompleteEvent, DataTableValue } from 'primereact/datatable';
 import { ColumnEditorOptions } from 'primereact/column';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { Tag } from 'primereact/tag';
 import { Toast } from 'primereact/toast';
 import { OfferToUpdate } from '@/types/appProps';
 import styled from '@emotion/styled';
 import { devices } from '@/lib/mediaQueries';
-import { getUser } from '@/session/SessionProvider'
+import { useSession } from '@/session/ClientSession'
 import moreButtonTemplate from './tableTemplates/moreButtonTemplate';
 import Sceleton from './tableTemplates/Sceleton';
-import { getStockSeverity, expandRowHandler } from '@/lib/helpers';
+import { expandRowHandler } from '@/lib/helpers';
 import { InputText } from 'primereact/inputtext'
 import ChangePricesModal from './ChangePricesModal'
 import CreateSkuButton from './tableTemplates/CreateSkuButton'
@@ -28,16 +27,20 @@ import imageBodyTemplate from './tableTemplates/imageBodyTemplate'
 import stockQuantityTemplate from './tableTemplates/stockQuantityTemplate'
 import defectQuantityEditor from './tableTemplates/defectQuantityEditor'
 import stockStatusTemplate from './tableTemplates/stockStatusTemplate'
+import skuBodyTemplate from './tableTemplates/skuBodyTemplate'
+
 
 async function updateInventory(url: string, { arg }: { arg: OfferToUpdate }) {
   const requestOptions = {
     method: 'POST',
     body: JSON.stringify(arg),
   };
+  console.log(arg);
   try {
     const response = await fetch(url, requestOptions)
     if (response.ok) {
-      return response.json()
+      const data = await response.json();
+      return { cacheId: arg.id, data }
     }
   } catch (err) {
     console.log(err)
@@ -55,6 +58,8 @@ type ProductTableProps = {
 
 export default function ProductTable({ tableProducts, retData, defData, loading }: ProductTableProps) {
 
+  const { updateQuantity, updatePrice, updateMultipleNodes } = useCache();
+
   const toast = useRef<Toast>(null);
 
   const menu = useRef(null);
@@ -69,7 +74,7 @@ export default function ProductTable({ tableProducts, retData, defData, loading 
 
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[]>([]);
 
-  const { user } = getUser()
+  const { user } = useSession()
 
   const { trigger } = useSWRMutation(`/api/sync`, updateInventory, {
     onError: (err) => {
@@ -78,10 +83,12 @@ export default function ProductTable({ tableProducts, retData, defData, loading 
     },
     onSuccess: (data) => {
 
-      const retOfResp = data.ret?.offer
-      const retPrResp = data.ret?.price
+      const retOfResp = data?.data.ret?.offer
+      const retPrResp = data?.data.ret?.price
 
-      if (retPrResp.success && retOfResp.success && data.woo) {
+      updateQuantity(data?.cacheId, data?.data.woo.stock_quantity)
+
+      if (retPrResp.success && retOfResp.success && data?.data.woo) {
         toast.current!.show({ severity: 'success', summary: 'Успешно', detail: 'Данные синхронизированы', life: 3000 })
       } else {
         toast.current!.show({ severity: 'error', summary: 'Ошибка', detail: "Ошибка синхронизации", life: 3000 })
@@ -114,23 +121,16 @@ export default function ProductTable({ tableProducts, retData, defData, loading 
 
     let parentIndex = Object.values(tableProducts!).findIndex((product) => product.variations.nodes.find((variation) => variation.sku === e.data.sku))
 
-    // setTableProducts((prev) => {
-    //   const newProdData = structuredClone(prev!)
-    //   newProdData[parentIndex].variations.nodes[index] = newData as Variation
-    //   return newProdData
-    // }
-    // )
-
-    setRetailTableData(({ ...prev }) => {
-      const newRetailData = { ...prev }
-      newRetailData.offers = newRetailData.offers?.map(offer => {
-        if (offer.xmlId == newData.sku) {
-          offer.quantity = newData.stockQuantity
-        }
-        return offer
-      })
-      return newRetailData
-    })
+    // setRetailTableData(({ ...prev }) => {
+    //   const newRetailData = { ...prev }
+    //   newRetailData.offers = newRetailData.offers?.map(offer => {
+    //     if (offer.xmlId == newData.sku) {
+    //       offer.quantity = newData.stockQuantity
+    //     }
+    //     return offer
+    //   })
+    //   return newRetailData
+    // })
 
     const createActionArr = (prevData: DataTableValue, newData: DataTableValue) => {
       console.log({ prevData, newData })
@@ -151,6 +151,7 @@ export default function ProductTable({ tableProducts, retData, defData, loading 
 
     const args = {
       productId: tableProducts![parentIndex].productId,
+      id: newData.id,
       variationId: newData.databaseId,
       count: newData.stockQuantity,
       retailId: retailCount?.id,
@@ -172,6 +173,10 @@ export default function ProductTable({ tableProducts, retData, defData, loading 
 
     // retQuantity !== undefined ?
     trigger<OfferToUpdate>(args)
+
+    updateMultipleNodes(newData.id, newData)
+
+
     // createTrigger<{ product: productWithVariation, variation: OfferToUpdate }>({ product: tableProducts![parentIndex], variation: newData as Variation })
   };
 
@@ -209,34 +214,6 @@ export default function ProductTable({ tableProducts, retData, defData, loading 
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     xlsx.writeFile(workbook, "DataSheet.xlsx");
-  }
-
-  const createSKUs = async () => {
-    const productsIds = new Map
-    if (tableProducts)
-      for (let product of tableProducts) {
-        for (const variation of product.variations.nodes) {
-          if (!variation.sku) {
-            productsIds.set(product.productId, [...product.variations.nodes.map(node => node.databaseId)])
-          }
-        }
-      }
-    const prJ = Object.fromEntries(productsIds)
-    console.log(prJ)
-    console.log(productsIds)
-    try {
-      const res = await fetch('/api/createAllSku', {
-        method: "POST",
-        body: JSON.stringify(prJ)
-      })
-      if (!res.ok) {
-        throw new Error('somethin went wrong')
-      }
-      const data = await res.json()
-      toast.current!.show({ severity: 'success', summary: 'Успешно', detail: data.message, life: 3000 })
-    } catch (error) {
-      console.log(error)
-    }
   }
 
   const deleteCustomerDuplicates = async () => {
@@ -319,7 +296,7 @@ export default function ProductTable({ tableProducts, retData, defData, loading 
 
           <Column style={{ width: '10%' }} field="price" editor={(user?.role === 'admin' || user?.role === 'manager') ? numberEditor : false} header="Цена" sortable></Column>
 
-          <Column style={{ width: '10%' }} header='SKU' body={(rowData: Variation) => rowData.sku}>
+          <Column style={{ width: '10%' }} header='SKU' field='sku' body={skuBodyTemplate}>
           </Column>
 
           <Column style={{ width: '10%' }} field='defect_quantity' header='Брак' editor={user?.role === 'admin' ? (options: ColumnEditorOptions) => defectQuantityEditor(options, setDefectTableData) : false} body={(rowData) => defectTemplate(rowData, defectTableData)}>
@@ -352,7 +329,7 @@ export default function ProductTable({ tableProducts, retData, defData, loading 
               <i className="pi pi-search" />
               <InputText onChange={searchHandler} style={{ width: '100%' }} placeholder="Поиск" />
             </MalikInputText>
-            <HeaderTemplate exportCSV={exportCSV} lookTable={lookTable} uploadToGoogle={uploadToGoogle} createSKUs={createSKUs} deleteCustomerDuplicates={deleteCustomerDuplicates} fixExternalId={fixExternalId} showBatchChangePricesPopup={setVisibleBatchModal} tableProducts={tableProducts} saveLocally={saveLocally} ref={menu} />
+            <HeaderTemplate exportCSV={exportCSV} lookTable={lookTable} uploadToGoogle={uploadToGoogle} deleteCustomerDuplicates={deleteCustomerDuplicates} fixExternalId={fixExternalId} showBatchChangePricesPopup={setVisibleBatchModal} tableProducts={tableProducts} saveLocally={saveLocally} ref={menu} />
           </ div>}>
 
           <Column expander style={{ width: '3em' }} />

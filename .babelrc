@@ -1,5 +1,6 @@
 {
-  "presets": [[
+  "presets": [
+    [
       "next/babel",
       {
         "preset-react": {
@@ -8,6 +9,8 @@
         }
       }
     ]
-],
-  "plugins":  ["@emotion/babel-plugin"]
+  ],
+  "plugins": [
+    "@emotion/babel-plugin"
+  ]
 }

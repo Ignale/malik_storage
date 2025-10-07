@@ -1,3 +1,4 @@
+'use client'
 import { actHistory } from '@/types/authTypes'
 import styled from '@emotion/styled'
 import React from 'react'

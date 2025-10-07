@@ -8,7 +8,7 @@ import OverlayHistoryContent from "../OverlayHistoryContent"
 import styled from "@emotion/styled"
 
 
-const moreButtonTemplate = (rowData: Variation) => {
+const MoreButtonTemplate = (rowData: Variation) => {
   const [isFetchinHistory, setIsFetchinHistory] = useState(false)
   const [historyIndex, setHistoryIndex] = useState(0)
   const [history, setHistory] = useState<actHistory[] | []>([])
@@ -19,7 +19,7 @@ const moreButtonTemplate = (rowData: Variation) => {
 
   const showHistoryHandler = async (e: SyntheticEvent) => {
     setIsFetchinHistory(true)
-    getHistory({ sku: rowData.sku }).then((data) => {
+    getHistory(rowData.sku).then((data) => {
       let historyArr = []
       for (let key in data) {
         historyArr.push(data[key])
@@ -70,4 +70,4 @@ const OverLayNavWrapper = styled.div`
   justify-content: center;
 `
 
-export default moreButtonTemplate;
+export default MoreButtonTemplate;

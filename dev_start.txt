@@ -1,0 +1,14 @@
+
+> malik-storage@0.1.0 dev
+> next dev
+
+[33mwarn[39m  - Port 3000 is in use, trying 3001 instead.
+[33mwarn[39m  - Port 3001 is in use, trying 3002 instead.
+[32mready[39m - started server on 0.0.0.0:3002, url: http://localhost:3002
+[36minfo[39m  - Loaded env from /Users/workstation/Programming/malik-storage/malik_storage/.env
+warn  - The `app` directory is experimental. To enable, add `appDir: true` to your `next.config.js` configuration under `experimental`. See https://nextjs.org/docs/messages/experimental-app-dir-config
+[33mwarn[39m  - The `app` directory is experimental. To enable, add `appDir: true` to your `next.config.js` configuration under `experimental`. See https://nextjs.org/docs/messages/experimental-app-dir-config
+[33mwarn[39m  - The `app` directory is experimental. To enable, add `appDir: true` to your `next.config.js` configuration under `experimental`. See https://nextjs.org/docs/messages/experimental-app-dir-config
+[36minfo[39m  - Disabled SWC as replacement for Babel because of custom Babel configuration ".babelrc" https://nextjs.org/docs/messages/swc-disabled
+[36minfo[39m  - Using external babel configuration from /Users/workstation/Programming/malik-storage/malik_storage/.babelrc
+[35mevent[39m - compiled client and server successfully in 2.7s (183 modules)

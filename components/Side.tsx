@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link";
 import styled from '@emotion/styled';
 import Image from "next/image";
@@ -8,18 +10,18 @@ import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
 import { devices } from '../lib/mediaQueries'
-import { useRouter } from "next/router";
+import { usePathname } from 'next/navigation'
 import { Button } from "@mui/material";
 import { signOut } from "firebase/auth";
 import { users } from "@/fireBaseConfig";
-import { getUser } from "@/session/SessionProvider";
+import { useSession } from "@/session/ClientSession";
 
 type pathProps = {
   path?: boolean
 }
 const Side = () => {
-  const { pathname } = useRouter()
-  const { user } = getUser()
+  const pathname = usePathname()
+  const { user } = useSession()
   return (
     <SideBar>
       <LogoWrapper>

@@ -1,22 +1,18 @@
-import React, { createContext, useState, useEffect, useContext, useCallback } from "react";
+"use client"
+
+import React, { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from 'firebase/auth'
 import { get, getDatabase, ref } from 'firebase/database'
 import { users } from "../fireBaseConfig";
 import nookies from 'nookies';
 import { authTypes } from "@/types/authTypes";
-import { useRouter } from "next/router";
-
-
-const SessionContext = createContext<{ user: authTypes['user'] | null }>({ user: null })
-
-
-export const getUser = () => {
-  return useContext(SessionContext)
-}
+import { useRouter, usePathname } from 'next/navigation'
+import SessionContext from './ClientSession'
 
 export default function SessionProvider({ children }: any) {
   const [currUser, setCurrUser] = useState<authTypes['user'] | null>(null)
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     users.onIdTokenChanged(async (user) => {
@@ -32,7 +28,7 @@ export default function SessionProvider({ children }: any) {
         nookies.set(undefined, 'token', token, { path: '/' })
       }
     })
-  }, [router.pathname, users.currentUser])
+  }, [pathname, router])
 
   return (
     <>

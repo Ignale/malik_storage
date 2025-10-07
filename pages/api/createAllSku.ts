@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import * as crypto from 'crypto'
 import wc from '../../lib/wc'
-import Allproducts from '../allproducts'
 
 
 const api = wc()
@@ -31,3 +30,4 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   }
 
 }
+

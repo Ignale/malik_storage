@@ -6,7 +6,6 @@ import { productWithVariation } from '@/types/appProps';
 
 type Props = {
   exportCSV: () => void
-  createSKUs: () => Promise<void>
   uploadToGoogle: () => Promise<void>
   lookTable: () => Promise<void>
   deleteCustomerDuplicates: () => Promise<void>
@@ -17,7 +16,7 @@ type Props = {
 }
 
 
-const HeaderTemplate = forwardRef(function HeaderTemplate({ exportCSV, createSKUs, uploadToGoogle, lookTable, deleteCustomerDuplicates, fixExternalId, showBatchChangePricesPopup, saveLocally, tableProducts }: Props, ref: any) {
+const HeaderTemplate = forwardRef(function HeaderTemplate({ exportCSV, uploadToGoogle, lookTable, deleteCustomerDuplicates, fixExternalId, showBatchChangePricesPopup, saveLocally, tableProducts }: Props, ref: any) {
 
   const ExelTemplate = (data: any) => {
     const menuHandler = (e: SyntheticEvent) => {
@@ -40,12 +39,6 @@ const HeaderTemplate = forwardRef(function HeaderTemplate({ exportCSV, createSKU
       icon: 'pi pi-fw pi-file',
       template: ExelTemplate
 
-    },
-    {
-      label: 'Cоздать SKU',
-      icon: 'pi pi-file-edit',
-      onClick: createSKUs,
-      template: ExelTemplate
     },
     {
       label: 'Выгрузить в таблицу',
