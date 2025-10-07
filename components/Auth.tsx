@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from "react";
 import { useFormik } from "formik"
 import { Message } from 'primereact/message';

@@ -13,10 +13,10 @@ export default function RootProviders({ children }: { children: React.ReactNode 
   const isProtected = !!protectedRoutes.includes(pathname || '')
 
   return (
-    // <SessionProvider>
-    <ApolloProvider client={client}>
-      {isProtected ? <ProtectedRoute>{children}</ProtectedRoute> : children}
-    </ApolloProvider>
-    // </SessionProvider>
+    <SessionProvider>
+      <ApolloProvider client={client}>
+        {isProtected ? <ProtectedRoute>{children}</ProtectedRoute> : children}
+      </ApolloProvider>
+    </SessionProvider>
   )
 }

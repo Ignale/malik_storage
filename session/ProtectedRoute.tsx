@@ -3,13 +3,15 @@
 import React, { useEffect } from 'react'
 import { useSession } from './ClientSession'
 import { useRouter, usePathname } from 'next/navigation'
-import { AppProps } from 'next/app'
+
 
 
 function ProtectedRoute({ children }: {
   children: React.ReactNode | React.ReactNode[]
 }) {
   const { user } = useSession()
+
+  console.log('ProtectedRoute user', user)
 
   const router = useRouter()
   const pathname = usePathname()

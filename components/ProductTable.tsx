@@ -292,7 +292,7 @@ export default function ProductTable({ tableProducts, retData, defData, loading 
 
           <Column style={{ width: '15%' }} field="stockStatus" header="Наличие" sortable body={stockStatusTemplate}></Column>
 
-          <Column style={{ width: '15%' }} field="stockQuantity" editor={user?.role === 'admin' ? numberEditor : false} header="Кол-во в магазине" body={stockQuantityTemplate} sortable></Column>
+          <Column style={{ width: '15%' }} field="stockQuantity" editor={user?.role === 'admin' ? numberEditor : false} header="Кол-во" body={stockQuantityTemplate} sortable></Column>
 
           <Column style={{ width: '10%' }} field="price" editor={(user?.role === 'admin' || user?.role === 'manager') ? numberEditor : false} header="Цена" sortable></Column>
 

@@ -42,4 +42,6 @@ async function checkRetailQuantity({ variationIds }: { variationIds: number[] })
 
   urlencodedPrice.append("prices", filter);
 }
+
+
 export { createSku, checkRetailQuantity, getHistory }
