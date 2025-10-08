@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext } from 'react'
+import { createContext, useContext } from 'react'
 import { authTypes } from '@/types/authTypes'
 
 export const SessionContext = createContext<{ user: authTypes['user'] | null }>({ user: null })

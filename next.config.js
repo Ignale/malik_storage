@@ -2,7 +2,9 @@
 
 const nextConfig = {
   reactStrictMode: false,
-
+  experimental: {
+    serverActions: true,
+  },
   images: {
     domains: ["malik-brand.com"],
   },

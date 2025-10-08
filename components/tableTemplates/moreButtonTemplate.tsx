@@ -3,7 +3,7 @@ import { actHistory } from "@/types/authTypes"
 import { Button } from "primereact/button"
 import { OverlayPanel } from "primereact/overlaypanel"
 import { SyntheticEvent, useRef, useState } from "react"
-import getHistory from "@/actions/getHistory"
+import getHistory from "@/app/actions/getHistory"
 import OverlayHistoryContent from "../OverlayHistoryContent"
 import styled from "@emotion/styled"
 

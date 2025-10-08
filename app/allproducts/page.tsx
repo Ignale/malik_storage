@@ -5,7 +5,6 @@ import { ALL_PRODUCTS_QUERY } from '../../lib/queries'
 import { useQuery } from '@apollo/client'
 import { ReatailOffers, DefData, products } from '../../types/appProps'
 import { Grid } from '@mui/material'
-import getDefectquantity from '../../actions/getHistory'
 import ProductTable from '@/components/ProductTable'
 
 import { Suspense, useRef, useState } from 'react'
