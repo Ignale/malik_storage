@@ -18,7 +18,7 @@ import Sceleton from '@/components/tableTemplates/Sceleton'
 
 const fetcher = (url: string) => fetch(url, {}).then(r => r.json())
 
-const Allproducts = () => {
+function Page() {
 
   const [args, setArgs] = useState<{ first: number | null, last: number | null, before: string | null, after: string | null }>({ first: 20, last: null, before: null, after: null })
 
@@ -61,4 +61,4 @@ const Allproducts = () => {
   )
 }
 
-export default Allproducts;
+export default Page;

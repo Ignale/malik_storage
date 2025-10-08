@@ -1,5 +1,4 @@
-'use server'
-
+"use server"
 import * as crypto from 'crypto'
 import wc from '../lib/wc'
 
@@ -19,6 +18,7 @@ async function createSku(productId: string, varitionIds: string[]) {
 }
 
 async function getHistory({ sku }: { sku: string }) {
+
   try {
     const response = await fetch(`https://malik-storage-default-rtdb.firebaseio.com/history/${sku}.json`)
     const data = await response.json()
@@ -33,6 +33,7 @@ async function getHistory({ sku }: { sku: string }) {
 
 
 async function checkRetailQuantity({ variationIds }: { variationIds: number[] }) {
+
   const filter = JSON.stringify({
     limit: 250,
     page: 1,

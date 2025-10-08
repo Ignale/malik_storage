@@ -2,7 +2,8 @@
 import Layout from '@/components/Layout'
 import Auth from '@/components/Auth'
 
-export default function Giftcards() {
+
+export default function Page() {
   return (
     <Layout>
       <Auth />
