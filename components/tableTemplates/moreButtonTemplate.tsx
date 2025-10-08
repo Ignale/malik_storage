@@ -3,7 +3,7 @@ import { actHistory } from "@/types/authTypes"
 import { Button } from "primereact/button"
 import { OverlayPanel } from "primereact/overlaypanel"
 import { SyntheticEvent, useRef, useState } from "react"
-import getHistory from "@/app/actions/getHistory"
+import { getHistory } from "@/app/actions"
 import OverlayHistoryContent from "../OverlayHistoryContent"
 import styled from "@emotion/styled"
 
@@ -19,7 +19,7 @@ const MoreButtonTemplate = (rowData: Variation) => {
 
   const showHistoryHandler = async (e: SyntheticEvent) => {
     setIsFetchinHistory(true)
-    getHistory(rowData.sku).then((data) => {
+    getHistory({ sku: rowData.sku }).then((data) => {
       let historyArr = []
       for (let key in data) {
         historyArr.push(data[key])
